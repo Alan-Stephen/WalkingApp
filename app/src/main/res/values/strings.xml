@@ -1,0 +1,4 @@
+<resources>
+    <string name="currLocationResource">Latitude:%s, Longitude:%s</string>
+    <string name="app_name">GPSCW2</string>
+</resources>
