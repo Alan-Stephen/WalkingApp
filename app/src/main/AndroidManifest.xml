@@ -14,7 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GPSCW2"
-        tools:targetApi="32">
+        >
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDMMNKybptE6uK1CEAdQjqTw0dhYnFflyw"
+            >
+        </meta-data>
         <service
             android:name=".LocationService"
             android:enabled="true"
