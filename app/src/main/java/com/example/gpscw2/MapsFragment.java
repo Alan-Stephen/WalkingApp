@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,14 +24,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = "COMP3018_MAPS_FRAGMENT";
+    LocationSource locationSource;
 
+    public static MapsFragment newInstance(LocationSource source) {
+        
+
+        MapsFragment fragment = new MapsFragment();
+        fragment.locationSource = source;
+        return fragment;
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                                           int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == LOCATION_PERMISSION) {
-            Log.d(TAG,"PERMSISSIONS GRANTED SUCCESFULLY");
+            Log.d(TAG,"PERMSISSIONS GRANTED SUCCESSFULLY");
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -62,6 +71,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         public void onMapReady(GoogleMap googleMap) {
             Log.d(TAG,"MAP READY");
             map = googleMap;
+            map.setLocationSource(locationSource);
             if (ActivityCompat.checkSelfPermission(mapsFragment.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(mapsFragment.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG,"REQUESTING PERMISSIONS");

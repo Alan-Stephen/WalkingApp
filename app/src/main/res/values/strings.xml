@@ -6,4 +6,12 @@
     <string name="statsButtonDescription">Statistics</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="distanceLabelText">Distance Travelled</string>
+    <string name="timeLabelText">Time Travelled</string>
+    <string name="timeLabelDefault">00:00:00</string>
+    <string name="DistanceLabelDefault">0.00 km</string>
+    <string name="runButton">START RUN</string>
+    <string name="walkButton">START WALK</string>
+    <string name="cycleButton">START CYCLING</string>
+
 </resources>

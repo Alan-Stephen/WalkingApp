@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
@@ -36,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel viewModel;
     private TextView currLocation;
     LocationService.LocationServiceBinder locationBinder;
-
-    GoogleMap map;
     FragmentManager fragmentManager;
+    MyLocationSource locationSource;
+
 
     private void bindCurrLocation(MutableLiveData<Double> lat, MutableLiveData<Double> lon) {
         Log.d(TAG, "binding location to textview");
@@ -46,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
         lat.observe(MainActivity.this, aDouble -> {
             viewModel.setLat(aDouble);
 
+            locationSource.alert(lat.getValue(),lon.getValue());
             Log.d(TAG, "changing lat");
-            currLocation.setText(getString(R.string.currLocationResource, Double.toString(viewModel.getLat()), Double.toString(viewModel.getLat())));
+            currLocation.setText(getString(R.string.currLocationResource, Double.toString(viewModel.getLat()), Double.toString(viewModel.getLon())));
         });
     }
 
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
+        locationSource = new MyLocationSource();
         Intent serviceIntent = new Intent(this, LocationService.class);
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
@@ -85,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView globeIcon = findViewById(R.id.globeIcon);
         globeIcon.setOnClickListener(v -> {
             fragmentManager.beginTransaction()
-                    .replace(R.id.fragmentHolder,MapsFragment.class,null)
+                    .replace(R.id.fragmentHolder,MapsFragment.newInstance(locationSource),null)
                     .setReorderingAllowed(true)
                     .commit();
         });
@@ -104,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.fragmentHolder,StatFragment.class,null)
                     .setReorderingAllowed(true)
                     .commit();
+        });
+
+        ImageView movementIcon = findViewById(R.id.movementIcon);
+        movementIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this,StartMovementActivity.class);
+            startActivity(intent);
         });
     }
 }
