@@ -38,16 +38,10 @@ public class LocationService extends Service {
 
     public void onCreate() {
         super.onCreate();
+
         if(locationListener == null)
             locationListener = new MyLocationListener();
 
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5,
-                    5,locationListener);
-        } catch (SecurityException e) {
-            Log.d(TAG,e.toString());
-        }
         Log.d(TAG, "Service created");
         createNotificationChannel();
     }
@@ -56,6 +50,15 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Service started");
 
+
+
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5,
+                    5,locationListener);
+        } catch (SecurityException e) {
+            Log.d(TAG,e.toString());
+        }
         startForeground(NOTIFICATION_ID, buildNotification());
 
         return START_STICKY;

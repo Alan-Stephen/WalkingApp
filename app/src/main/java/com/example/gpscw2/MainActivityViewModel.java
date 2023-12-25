@@ -3,22 +3,22 @@ package com.example.gpscw2;
 import androidx.lifecycle.ViewModel;
 
 public class MainActivityViewModel extends ViewModel {
-    private double lat;
-    private double lon;
+    private boolean gotLocationPermissions = false;
+    private boolean locationServiceActive = false;
 
-    public double getLat() {
-        return lat;
+    public boolean isGotLocationPermissions() {
+        return gotLocationPermissions;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    public void setGotLocationPermissions(boolean gotLocationPermissions) {
+        this.gotLocationPermissions = gotLocationPermissions;
     }
 
-    public double getLon() {
-        return lon;
+    public boolean isLocationServiceActive() {
+        return locationServiceActive;
     }
 
-    public void setLon(double lon) {
-        this.lon = lon;
+    public void setLocationServiceActive(boolean locationServiceActive) {
+        this.locationServiceActive = locationServiceActive;
     }
 }
