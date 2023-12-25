@@ -3,6 +3,7 @@ package com.example.gpscw2;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -18,6 +19,8 @@ import android.location.LocationRequest;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,17 +29,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends AppCompatActivity {
 
 
-    public static final int LOCATION_PERMISSION = 1922;
     private static final String TAG = "COMP3018";
-
     private MainActivityViewModel viewModel;
     private TextView currLocation;
     LocationService.LocationServiceBinder locationBinder;
 
     GoogleMap map;
+    FragmentManager fragmentManager;
 
     private void bindCurrLocation(MutableLiveData<Double> lat, MutableLiveData<Double> lon) {
         Log.d(TAG, "binding location to textview");
@@ -69,48 +71,39 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocationManager locationManager =
-                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
         setContentView(R.layout.activity_main);
 
         currLocation = findViewById(R.id.textView);
 
         viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
-        //Intent serviceIntent = new Intent(this, LocationService.class);
-        //bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
+        fragmentManager = getSupportFragmentManager();
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        map = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    LOCATION_PERMISSION);
-            return;
-        }
-        map.setMyLocationEnabled(true);
-    }
+        ImageView globeIcon = findViewById(R.id.globeIcon);
+        globeIcon.setOnClickListener(v -> {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentHolder,MapsFragment.class,null)
+                    .setReorderingAllowed(true)
+                    .commit();
+        });
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ImageView homeIcon = findViewById(R.id.homeIcon);
+        homeIcon.setOnClickListener(v -> {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentHolder,HomeFragment.class,null)
+                    .setReorderingAllowed(true)
+                    .commit();
+        });
 
-        if (requestCode == LOCATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                map.setMyLocationEnabled(true);
-            } else {
-                Log.d(TAG,"Do something else");
-            }
-        }
+        ImageView statsIcon = findViewById(R.id.statsIcon);
+        statsIcon.setOnClickListener(v -> {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentHolder,StatFragment.class,null)
+                    .setReorderingAllowed(true)
+                    .commit();
+        });
     }
 }
