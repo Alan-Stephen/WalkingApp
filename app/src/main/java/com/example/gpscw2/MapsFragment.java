@@ -24,9 +24,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = "COMP3018_MAPS_FRAGMENT";
-    LocationSource locationSource;
+    MyLocationSource locationSource;
 
-    public static MapsFragment newInstance(LocationSource source) {
+    public static MapsFragment newInstance(MyLocationSource source) {
         
 
         MapsFragment fragment = new MapsFragment();
@@ -46,6 +46,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     return;
                 }
                 map.setMyLocationEnabled(true);
+                locationSource.relalert();
             } else {
                 Log.d(TAG,"permissions denied");
             }
@@ -81,6 +82,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 return;
             }
             map.setMyLocationEnabled(true);
+            locationSource.relalert();
         }
     };
 

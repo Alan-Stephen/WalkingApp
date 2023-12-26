@@ -54,4 +54,11 @@ public class MyLocationListener implements LocationListener {
     public void onProviderDisabled(@NonNull String provider) {
         Log.d("comp3018", "onProviderDisabled: " + provider);
     }
+
+    public void setInitialLocation(Location intial) {
+        lat.setValue(intial.getLatitude());
+        lon.setValue(intial.getLongitude());
+    }
+
+
 }

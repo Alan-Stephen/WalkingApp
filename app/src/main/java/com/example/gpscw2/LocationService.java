@@ -1,6 +1,7 @@
 package com.example.gpscw2;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 
@@ -51,14 +52,16 @@ public class LocationService extends Service {
         Log.d(TAG, "Service started");
 
 
-
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5,
                     5,locationListener);
+            Location intial = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            locationListener.setInitialLocation(intial);
         } catch (SecurityException e) {
             Log.d(TAG,e.toString());
         }
+
         startForeground(NOTIFICATION_ID, buildNotification());
 
         return START_STICKY;

@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
            return;
        }
        Log.d(TAG,"HAVE ALREAD LOCATION PERMISSIONS");
+       startLocationService();
    }
 
     private void requestLocationPermissions() {
@@ -98,6 +99,18 @@ public class MainActivity extends AppCompatActivity {
         return coarse && fine;
     }
 
+    private void startLocationService() {
+        if(viewModel.isLocationServiceActive()) {
+            return;
+        }
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        startService(serviceIntent);
+
+        viewModel.setLocationServiceActive(true);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -106,11 +119,8 @@ public class MainActivity extends AppCompatActivity {
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 viewModel.setGotLocationPermissions(true);
                 Log.d(TAG,"ALL PERMISSIONS ATTAINED");
+                startLocationService();
 
-                Intent serviceIntent = new Intent(this, LocationService.class);
-                bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-
-                startService(serviceIntent);
             }
             } else {
                 viewModel.setGotLocationPermissions(false);
