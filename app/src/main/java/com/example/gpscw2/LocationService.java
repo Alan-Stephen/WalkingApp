@@ -1,6 +1,7 @@
 package com.example.gpscw2;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 
@@ -22,6 +23,12 @@ public class LocationService extends Service {
     private static final String CHANNEL_ID = "LocationServiceID";
     private static final String CHANNEL_NAME = "Location Notifications";
 
+    enum LocationAccuracy {
+        HIGH_ACCURACY,
+        LOW_ACCURACY
+    }
+
+    private LocationAccuracy currLocationAccuracy;
     MyLocationListener locationListener;
 
     private final IBinder binder = new LocationServiceBinder();
@@ -42,6 +49,7 @@ public class LocationService extends Service {
         if(locationListener == null)
             locationListener = new MyLocationListener();
 
+        currLocationAccuracy = LocationAccuracy.LOW_ACCURACY;
         Log.d(TAG, "Service created");
         createNotificationChannel();
     }
@@ -50,15 +58,26 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Service started");
 
-
-
+        if(locationListener == null)
+            locationListener = new MyLocationListener();
+        currLocationAccuracy = LocationAccuracy.HIGH_ACCURACY;
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5,
-                    5,locationListener);
+            if(currLocationAccuracy == LocationAccuracy.LOW_ACCURACY) {
+                Log.d(TAG,"SETTING LOCATION ACCURACY TO LOW ACCRAUCY");
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000,
+                        25,locationListener);
+            } else {
+                Log.d(TAG,"SETTING LOCATION ACCURACY TO HIGH ACCURACY");
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000,
+                        5,locationListener);
+            }
+            Location intial = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            locationListener.setInitialLocation(intial);
         } catch (SecurityException e) {
             Log.d(TAG,e.toString());
         }
+
         startForeground(NOTIFICATION_ID, buildNotification());
 
         return START_STICKY;
@@ -105,4 +124,5 @@ public class LocationService extends Service {
     public IBinder onBind(Intent intent) {
         return binder;
     }
+
 }

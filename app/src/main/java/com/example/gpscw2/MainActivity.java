@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
            return;
        }
        Log.d(TAG,"HAVE ALREAD LOCATION PERMISSIONS");
+       startLocationService();
    }
 
     private void requestLocationPermissions() {
@@ -98,6 +99,18 @@ public class MainActivity extends AppCompatActivity {
         return coarse && fine;
     }
 
+    private void startLocationService() {
+        if(viewModel.isLocationServiceActive()) {
+            return;
+        }
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        startService(serviceIntent);
+
+        viewModel.setLocationServiceActive(true);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -105,18 +118,15 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 viewModel.setGotLocationPermissions(true);
-                Log.d(TAG,"ALL PERMISSIONS ATTAINED");
+                Log.d(TAG, "ALL PERMISSIONS ATTAINED");
+                startLocationService();
 
-                Intent serviceIntent = new Intent(this, LocationService.class);
-                bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-
-                startService(serviceIntent);
-            }
             } else {
                 viewModel.setGotLocationPermissions(false);
-                Toast.makeText(this, "Location permissions are needed for this feature", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "LOCATION REQUESTS DENIED");
+                Toast.makeText(this, "Location permissions are needed for this feature, enable them in settings.", Toast.LENGTH_SHORT).show();
             }
-
+        }
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +147,10 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView globeIcon = findViewById(R.id.globeIcon);
         globeIcon.setOnClickListener(v -> {
+            if(!checkLocationPermissions()) {
+                requestLocationPermissions();
+                return;
+            }
             fragmentManager.beginTransaction()
                     .replace(R.id.fragmentHolder,MapsFragment.newInstance(locationSource),null)
                     .setReorderingAllowed(true)
@@ -164,5 +178,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this,StartMovementActivity.class);
             startActivity(intent);
         });
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentHolder, HomeFragment.class,null)
+                .setReorderingAllowed(true)
+                .commit();
     }
 }
