@@ -3,6 +3,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 
@@ -29,10 +30,12 @@ public class LocationService extends Service {
 
     enum LocationAccuracy {
         HIGH_ACCURACY,
-        LOW_ACCURACY
+        LOW_ACCURACY,
+        NO_UPDATES
     }
 
     private LocationAccuracy currLocationAccuracy;
+    private LocationManager locationManager;
     MyLocationListener locationListener;
 
     private PowerManager.WakeLock wakeLock;
@@ -47,6 +50,36 @@ public class LocationService extends Service {
 
         public MutableLiveData<Double> getLat() {
             return locationListener.getLat();
+        }
+
+        public void setAccuracy(LocationAccuracy accuracy) {
+            setCurrLocationAccuracy(accuracy);
+        }
+
+        public MyLocationSource getLocationSource() {
+            return locationListener.locationSource;
+        }
+    }
+
+    private void setCurrLocationAccuracy(LocationAccuracy accuracy) {
+        locationManager.removeUpdates(locationListener);
+
+        locationManager.removeUpdates(locationListener);
+        currLocationAccuracy = accuracy;
+        try {
+            if(currLocationAccuracy == LocationAccuracy.LOW_ACCURACY) {
+                Log.d(TAG,"SETTING LOCATION ACCURACY TO LOW ACCRAUCY");
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000,
+                        25,locationListener);
+                locationListener.setIntervalSeconds(20000);
+            } else if (currLocationAccuracy == LocationAccuracy.HIGH_ACCURACY){
+                Log.d(TAG,"SETTING LOCATION ACCURACY TO HIGH ACCURACY");
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000,
+                        5,locationListener);
+                locationListener.setIntervalSeconds(2000);
+            }
+        } catch (SecurityException e) {
+            Log.d(TAG,e.toString());
         }
     }
 
@@ -63,7 +96,7 @@ public class LocationService extends Service {
         acquireWakeLock();
         Log.d(TAG, "Service started");
 
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         AtomicReference<Double> currLat = new AtomicReference<>((double) 0);
         AtomicReference<Double> currLon = new AtomicReference<>((double) 0);
@@ -79,21 +112,8 @@ public class LocationService extends Service {
         if(locationListener == null)
             locationListener = new MyLocationListener(20000,currLat.get(),currLon.get());
         currLocationAccuracy = LocationAccuracy.HIGH_ACCURACY;
-        try {
-            if(currLocationAccuracy == LocationAccuracy.LOW_ACCURACY) {
-                Log.d(TAG,"SETTING LOCATION ACCURACY TO LOW ACCRAUCY");
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000,
-                        25,locationListener);
-                locationListener.setIntervalSeconds(20000);
-            } else {
-                Log.d(TAG,"SETTING LOCATION ACCURACY TO HIGH ACCURACY");
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000,
-                        5,locationListener);
-                locationListener.setIntervalSeconds(2000);
-            }
-        } catch (SecurityException e) {
-            Log.d(TAG,e.toString());
-        }
+
+        setCurrLocationAccuracy(currLocationAccuracy);
 
         startForeground(NOTIFICATION_ID, buildNotification());
 

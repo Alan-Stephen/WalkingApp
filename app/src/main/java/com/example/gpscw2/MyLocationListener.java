@@ -10,12 +10,17 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import com.google.android.gms.maps.LocationSource;
+
 import java.util.List;
 
 public class MyLocationListener implements LocationListener {
     private MutableLiveData<Double> lat;
     private MutableLiveData<Double> lon;
     private int intervalSeconds;
+
+    MyLocationSource locationSource;
+    private boolean starting;
 
     private Location lastLocation;
     Movement currentMovement;
@@ -32,8 +37,12 @@ public class MyLocationListener implements LocationListener {
        Log.d("comp3018", lastLocation.toString());
        this.intervalSeconds = intervalSeconds;
 
-       lon.setValue(0.0);
-       lat.setValue(0.0);
+       starting = false;
+       lon.setValue(lastLon);
+       lat.setValue(lastLat);
+
+       locationSource = new MyLocationSource();
+       locationSource.alert(lastLat,lastLon);
     }
 
     public void setIntervalSeconds(int seconds) {
@@ -47,14 +56,21 @@ public class MyLocationListener implements LocationListener {
         return lon;
     }
 
+    public void setStarting(boolean starting) {
+        this.starting = starting;
+    }
     @Override
     public void onLocationChanged(@NonNull Location location) {
         lon.setValue(location.getLongitude());
         lat.setValue(location.getLatitude());
 
-        Log.d("comp3018", " Distance travellled : " + location.distanceTo(lastLocation) +
-                " from:" + lastLocation.toString() + " to :" + location.toString());
+        locationSource.alert(lat.getValue(), lon.getValue());
+        if(!starting) {
+            Log.d("comp3018", " Distance travellled : " + location.distanceTo(lastLocation) +
+                    " from:" + lastLocation.toString() + " to :" + location.toString());
 
+        }
+        starting = false;
         lastLocation.setLongitude(location.getLongitude());
         lastLocation.setLatitude(location.getLatitude());
         Log.d("comp3018", location.getLatitude() + " " + location.getLongitude());

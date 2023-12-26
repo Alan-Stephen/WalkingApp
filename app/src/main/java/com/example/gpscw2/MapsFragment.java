@@ -31,26 +31,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
         MapsFragment fragment = new MapsFragment();
         fragment.locationSource = source;
-        return fragment;
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                                          int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == LOCATION_PERMISSION) {
-            Log.d(TAG,"PERMSISSIONS GRANTED SUCCESSFULLY");
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                map.setMyLocationEnabled(true);
-                locationSource.relalert();
-            } else {
-                Log.d(TAG,"permissions denied");
-            }
-        }
+        return fragment;
     }
 
     public static final int LOCATION_PERMISSION = 1922;
@@ -75,10 +57,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             map.setLocationSource(locationSource);
             if (ActivityCompat.checkSelfPermission(mapsFragment.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(mapsFragment.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG,"REQUESTING PERMISSIONS");
-                ActivityCompat.requestPermissions(mapsFragment.getActivity(),
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION},LOCATION_PERMISSION);
+                Log.d(TAG,"ERROR LOCATION PERMISSIONS NOT ENABLED IN MAPS");
                 return;
             }
             map.setMyLocationEnabled(true);

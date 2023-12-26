@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView currLocation;
     LocationService.LocationServiceBinder locationBinder;
     FragmentManager fragmentManager;
-    MyLocationSource locationSource;
     private final static int LOCATION_PERMISSION = 1022;
+
+    MyLocationSource locationSource;
 
 
 
@@ -52,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         currLocation.setText("hello");
         lat.observe(MainActivity.this, aDouble -> {
 
-            locationSource.alert(lat.getValue(),lon.getValue());
             Log.d(TAG, "changing lat");
             currLocation.setText(getString(R.string.currLocationResource, Double.toString(lat.getValue()), Double.toString(lon.getValue())));
         });
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             locationBinder = (LocationService.LocationServiceBinder) service;
+            locationSource = locationBinder.getLocationSource();
             bindCurrLocation(locationBinder.getLat(), locationBinder.getLon());
             Log.d(TAG, "Location Serivce Bound to Main");
         }
@@ -112,15 +113,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLocationService() {
+        Intent serviceIntent = new Intent(this, LocationService.class);
+
         if(viewModel.isLocationServiceActive() || isMyServiceRunning(LocationService.class)) {
+            viewModel.setLocationServiceActive(true);
+            bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
             return;
         }
-        Intent serviceIntent = new Intent(this, LocationService.class);
-        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
         startService(serviceIntent);
-
-        viewModel.setLocationServiceActive(true);
+        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -153,15 +155,18 @@ public class MainActivity extends AppCompatActivity {
         if(!viewModel.isGotLocationPermissions())
             getLocationPermssions();
 
-        locationSource = new MyLocationSource();
-
-
         fragmentManager = getSupportFragmentManager();
 
         ImageView globeIcon = findViewById(R.id.globeIcon);
         globeIcon.setOnClickListener(v -> {
             if(!checkLocationPermissions()) {
                 requestLocationPermissions();
+                return;
+            }
+
+            if(locationSource == null) {
+                Toast.makeText(this, "Location Tracking is Required for this feature, " +
+                        "if you have them on already, please wait for them to activate!", Toast.LENGTH_SHORT).show();
                 return;
             }
             fragmentManager.beginTransaction()
@@ -196,5 +201,13 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragmentHolder, HomeFragment.class,null)
                 .setReorderingAllowed(true)
                 .commit();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(serviceConnection != null) {
+            unbindService(serviceConnection);
+        }
     }
 }
