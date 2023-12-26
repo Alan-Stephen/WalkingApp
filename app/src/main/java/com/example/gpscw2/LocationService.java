@@ -1,6 +1,7 @@
 package com.example.gpscw2;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -12,6 +13,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -30,6 +32,9 @@ public class LocationService extends Service {
 
     private LocationAccuracy currLocationAccuracy;
     MyLocationListener locationListener;
+
+    private PowerManager.WakeLock wakeLock;
+
 
     private final IBinder binder = new LocationServiceBinder();
 
@@ -56,6 +61,7 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        acquireWakeLock();
         Log.d(TAG, "Service started");
 
         if(locationListener == null)
@@ -81,6 +87,17 @@ public class LocationService extends Service {
         startForeground(NOTIFICATION_ID, buildNotification());
 
         return START_STICKY;
+    }
+
+    private void acquireWakeLock() {
+        PowerManager manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = manager.newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK,
+                "MDPCW2:MOVEMENT_TRACKING_WAKE_LOCK"
+        );
+        Log.d(TAG,"WAKE LOCK ACQUIRED");
+
+        wakeLock.acquire();
     }
 
     private void createNotificationChannel() {
@@ -117,6 +134,8 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        wakeLock.release();
+        Log.d(TAG,"Wake Lock Released");
         Log.d(TAG, "Service destroyed");
     }
 

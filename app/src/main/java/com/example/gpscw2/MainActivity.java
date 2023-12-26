@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     MyLocationSource locationSource;
     private final static int LOCATION_PERMISSION = 1022;
 
-    boolean hasLocationPermissions;
 
 
     private void bindCurrLocation(MutableLiveData<Double> lat, MutableLiveData<Double> lon) {
@@ -87,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG,"REQUESTING LOCATION PERMISSIONS");
         this.requestPermissions(
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION},LOCATION_PERMISSION);
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION},LOCATION_PERMISSION);
         return;
     }
 
@@ -95,12 +96,23 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG,"CHECKING LOCATION PERMISSIONS");
         boolean coarse = this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         boolean fine = this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        boolean background = this.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
-        return coarse && fine;
+        return coarse && fine && background;
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void startLocationService() {
-        if(viewModel.isLocationServiceActive()) {
+        if(viewModel.isLocationServiceActive() || isMyServiceRunning(LocationService.class)) {
             return;
         }
         Intent serviceIntent = new Intent(this, LocationService.class);
@@ -116,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                 viewModel.setGotLocationPermissions(true);
                 Log.d(TAG, "ALL PERMISSIONS ATTAINED");
                 startLocationService();
