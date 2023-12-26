@@ -17,7 +17,9 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LocationService extends Service {
     private static final String TAG = "COMP3018";
@@ -51,9 +53,6 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        if(locationListener == null)
-            locationListener = new MyLocationListener();
-
         currLocationAccuracy = LocationAccuracy.LOW_ACCURACY;
         Log.d(TAG, "Service created");
         createNotificationChannel();
@@ -64,22 +63,34 @@ public class LocationService extends Service {
         acquireWakeLock();
         Log.d(TAG, "Service started");
 
-        if(locationListener == null)
-            locationListener = new MyLocationListener();
-        currLocationAccuracy = LocationAccuracy.HIGH_ACCURACY;
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        AtomicReference<Double> currLat = new AtomicReference<>((double) 0);
+        AtomicReference<Double> currLon = new AtomicReference<>((double) 0);
+        try {
+            locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null,
+                    Executors.newSingleThreadExecutor(), location -> {
+                currLon.set(location.getLongitude());
+                currLat.set(location.getLatitude());
+                    });
+        } catch(SecurityException e) {
+            Log.d(TAG,e.toString());
+        }
+        if(locationListener == null)
+            locationListener = new MyLocationListener(20000,currLat.get(),currLon.get());
+        currLocationAccuracy = LocationAccuracy.HIGH_ACCURACY;
         try {
             if(currLocationAccuracy == LocationAccuracy.LOW_ACCURACY) {
                 Log.d(TAG,"SETTING LOCATION ACCURACY TO LOW ACCRAUCY");
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000,
                         25,locationListener);
+                locationListener.setIntervalSeconds(20000);
             } else {
                 Log.d(TAG,"SETTING LOCATION ACCURACY TO HIGH ACCURACY");
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000,
                         5,locationListener);
+                locationListener.setIntervalSeconds(2000);
             }
-            Location intial = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            locationListener.setInitialLocation(intial);
         } catch (SecurityException e) {
             Log.d(TAG,e.toString());
         }

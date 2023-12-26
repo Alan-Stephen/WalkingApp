@@ -15,16 +15,30 @@ import java.util.List;
 public class MyLocationListener implements LocationListener {
     private MutableLiveData<Double> lat;
     private MutableLiveData<Double> lon;
+    private int intervalSeconds;
 
-    MyLocationListener() {
+    private Location lastLocation;
+    Movement currentMovement;
+    MyLocationListener(int intervalSeconds, double lastLat, double lastLon) {
        super();
+       currentMovement = null;
        lat = new MutableLiveData<>();
        lon = new MutableLiveData<>();
 
-       lat.setValue(0.0);
+       lastLocation = new Location("gps");
+       lastLocation.setLatitude(lastLat);
+       lastLocation.setLongitude(lastLon);
+
+       Log.d("comp3018", lastLocation.toString());
+       this.intervalSeconds = intervalSeconds;
+
        lon.setValue(0.0);
+       lat.setValue(0.0);
     }
 
+    public void setIntervalSeconds(int seconds) {
+        intervalSeconds = seconds;
+    }
     public MutableLiveData<Double> getLat() {
         return lat;
     }
@@ -35,8 +49,14 @@ public class MyLocationListener implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        lat.setValue(location.getLatitude());
         lon.setValue(location.getLongitude());
+        lat.setValue(location.getLatitude());
+
+        Log.d("comp3018", " Distance travellled : " + location.distanceTo(lastLocation) +
+                " from:" + lastLocation.toString() + " to :" + location.toString());
+
+        lastLocation.setLongitude(location.getLongitude());
+        lastLocation.setLatitude(location.getLatitude());
         Log.d("comp3018", location.getLatitude() + " " + location.getLongitude());
     }
 
@@ -54,16 +74,4 @@ public class MyLocationListener implements LocationListener {
     public void onProviderDisabled(@NonNull String provider) {
         Log.d("comp3018", "onProviderDisabled: " + provider);
     }
-
-    public void setInitialLocation(Location intial) {
-        if(intial == null) {
-            lat.setValue(0.0);
-            lon.setValue(0.0);
-            return;
-        }
-        lat.setValue(intial.getLatitude());
-        lon.setValue(intial.getLongitude());
-    }
-
-
 }
