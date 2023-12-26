@@ -56,13 +56,8 @@ public class MyLocationListener implements LocationListener {
     }
 
     public void setInitialLocation(Location intial) {
-        if(intial != null) {
-            lat.setValue(intial.getLatitude());
-            lon.setValue(intial.getLongitude());
-        } else {
-            lat.setValue(0.0);
-            lon.setValue(0.0);
-        }
+        lat.setValue(intial.getLatitude());
+        lon.setValue(intial.getLongitude());
     }
 
 
