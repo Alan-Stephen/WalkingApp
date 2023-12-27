@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             locationSource = locationBinder.getLocationSource();
             bindCurrLocation(locationBinder.getLat(), locationBinder.getLon());
             Log.d(TAG, "Location Serivce Bound to Main");
+            unbindService(serviceConnection);
         }
 
         @Override
@@ -159,12 +160,13 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView globeIcon = findViewById(R.id.globeIcon);
         globeIcon.setOnClickListener(v -> {
+
             if(!checkLocationPermissions()) {
                 requestLocationPermissions();
                 return;
             }
 
-            if(locationSource == null) {
+            if(locationSource == null || !isMyServiceRunning(LocationService.class)) {
                 Toast.makeText(this, "Location Tracking is Required for this feature, " +
                         "if you have them on already, please wait for them to activate!", Toast.LENGTH_SHORT).show();
                 return;
@@ -193,6 +195,16 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView movementIcon = findViewById(R.id.movementIcon);
         movementIcon.setOnClickListener(v -> {
+            if(!checkLocationPermissions()) {
+                requestLocationPermissions();
+                return;
+            }
+
+            if(!isMyServiceRunning(LocationService.class)) {
+                Toast.makeText(this, "Location Tracking is Required for this feature, " +
+                        "if you have them on already, please wait for them to activate!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(MainActivity.this,StartMovementActivity.class);
             startActivity(intent);
         });

@@ -14,5 +14,6 @@
     <string name="walkButton">START WALK</string>
     <string name="cycleButton">START CYCLING</string>
     <string name="pauseAndPlayInitial">Start Tracking Movements</string>;
+    <string name="pauseAndPlayAlt">Stop Tracking Movements</string>;
 
 </resources>
