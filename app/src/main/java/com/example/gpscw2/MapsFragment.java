@@ -62,6 +62,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             }
             map.setMyLocationEnabled(true);
             locationSource.relalert();
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationSource.lastLat,locationSource.lastLon),15.0F));
         }
     };
 
