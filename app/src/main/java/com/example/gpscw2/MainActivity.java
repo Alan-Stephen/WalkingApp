@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "COMP3018";
+
+    private boolean mapsNeedsToBeLaunched;
     private MainActivityViewModel viewModel;
     private TextView currLocation;
     LocationService.LocationServiceBinder locationBinder;
@@ -65,7 +68,16 @@ public class MainActivity extends AppCompatActivity {
             locationSource = locationBinder.getLocationSource();
             bindCurrLocation(locationBinder.getLat(), locationBinder.getLon());
             Log.d(TAG, "Location Serivce Bound to Main");
+
+            if(mapsNeedsToBeLaunched) {
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragmentHolder,MapsFragment.newInstance(locationSource),null)
+                        .setReorderingAllowed(true)
+                        .commit();
+            }
+
             unbindService(serviceConnection);
+            serviceConnection = null;
         }
 
         @Override
@@ -119,11 +131,14 @@ public class MainActivity extends AppCompatActivity {
         if(viewModel.isLocationServiceActive() || isMyServiceRunning(LocationService.class)) {
             viewModel.setLocationServiceActive(true);
             bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+            Log.d(TAG,"Just Binding service");
             return;
         }
 
         startService(serviceIntent);
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        viewModel.setLocationServiceActive(true);
+        Log.d(TAG,"starting and binding service");
     }
 
     @Override
@@ -166,11 +181,13 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            viewModel.setCurrFragment(MainActivityViewModel.MainFragments.MAPS);
             if(locationSource == null || !isMyServiceRunning(LocationService.class)) {
                 Toast.makeText(this, "Location Tracking is Required for this feature, " +
                         "if you have them on already, please wait for them to activate!", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             fragmentManager.beginTransaction()
                     .replace(R.id.fragmentHolder,MapsFragment.newInstance(locationSource),null)
                     .setReorderingAllowed(true)
@@ -179,6 +196,8 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView homeIcon = findViewById(R.id.homeIcon);
         homeIcon.setOnClickListener(v -> {
+
+            viewModel.setCurrFragment(MainActivityViewModel.MainFragments.MAIN);
             fragmentManager.beginTransaction()
                     .replace(R.id.fragmentHolder,HomeFragment.class,null)
                     .setReorderingAllowed(true)
@@ -187,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView statsIcon = findViewById(R.id.statsIcon);
         statsIcon.setOnClickListener(v -> {
+            viewModel.setCurrFragment(MainActivityViewModel.MainFragments.STATS);
             fragmentManager.beginTransaction()
                     .replace(R.id.fragmentHolder,StatFragment.class,null)
                     .setReorderingAllowed(true)
@@ -221,5 +241,68 @@ public class MainActivity extends AppCompatActivity {
         if(serviceConnection != null) {
             unbindService(serviceConnection);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+       super.onSaveInstanceState(outState);
+
+       Log.d(TAG,"SAVING INSTANCE");
+
+       outState.putDouble("lat", viewModel.getLat());
+       outState.putDouble("lon", viewModel.getLon());
+
+       outState.putBoolean("locationServiceActive", viewModel.isLocationServiceActive());
+       outState.putBoolean("hasPermissions", viewModel.isGotLocationPermissions());
+
+       outState.putInt("currentFragment", viewModel.getCurrFragment().ordinal());
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle inState){
+       super.onRestoreInstanceState(inState);
+
+       Log.d(TAG,"RESTORING INSTANCE");
+
+       viewModel.setLat(inState.getDouble("lat"));
+       viewModel.setLat(inState.getDouble("lon"));
+
+       viewModel.setLocationServiceActive(inState.getBoolean("locationServiceActive"));
+       viewModel.setGotLocationPermissions(inState.getBoolean("hasPermissions"));
+
+       viewModel.setCurrFragment(MainActivityViewModel.MainFragments.values()[inState.getInt("currentFragment")]);
+
+
+        fragmentManager = getSupportFragmentManager();
+        Class<? extends Fragment> fragment;
+
+        switch(viewModel.getCurrFragment()){
+            case MAPS:
+                fragment = MapsFragment.class;
+                break;
+            case STATS:
+                fragment = StatFragment.class;
+                break;
+            default:
+                fragment = HomeFragment.class;
+                break;
+        }
+
+        Log.d(TAG,"SWITCHING TO " + fragment.toString());
+        if(fragment == MapsFragment.class) {
+            if(locationSource == null) {
+                mapsNeedsToBeLaunched = true;
+                return;
+            }
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentHolder, MapsFragment.newInstance(locationSource),null)
+                    .setReorderingAllowed(true)
+                    .commit();
+            return;
+        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentHolder, fragment,null)
+                .setReorderingAllowed(true)
+                .commit();
     }
 }

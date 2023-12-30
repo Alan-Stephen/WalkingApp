@@ -14,6 +14,19 @@
     <string name="walkButton">START WALK</string>
     <string name="cycleButton">START CYCLING</string>
     <string name="pauseAndPlayInitial">Start Tracking Movements</string>;
-    <string name="pauseAndPlayAlt">Stop Tracking Movements</string>;
+    <string name="pauseAndPlayAlt">Stop Tracking Movements</string>
+    <string name="makeMarkerName">Tap to make location notification</string>
+    <string name="placeButton">Place</string>
+    <string name="discardButton">Discard</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="notificationRangeText">Notification Range: %1$d m</string>
+    <string name="descriptionLabel">Description</string>
+    <string name="descriptionHint">Enter description here</string>
+    <string name="title_hin">Enter Title here</string>
+    <string name="discard">Discard</string>
+    <string name="confirm">Confirm</string>
+    <string name="makeMarkerTitle">Create a location based Notification!</string>;
 
 </resources>
