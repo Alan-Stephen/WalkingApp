@@ -62,6 +62,7 @@ public class MakeMarkerActivity extends AppCompatActivity {
 
             if(title.equals("")) {
                 Toast.makeText(this,"Title can't be empty",Toast.LENGTH_SHORT).show();
+                return;
             }
             viewModel.insert(new LocationNotificationEntity(lat,lon,notificationRange.getProgress(),title,description));
             finish();

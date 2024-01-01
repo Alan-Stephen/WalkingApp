@@ -7,8 +7,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.graphics.BitmapFactory;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -25,6 +27,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,7 +50,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private Button confirmMarker;
     private Button discardMarker;
     private Button deleteMarker;
-    HashMap<Marker,Integer> markers;
+    HashMap<Marker,LocationNotificationEntity> markers;
+    Circle circle;
     Marker currMarker = null;
     Marker selectedMarker = null;
 
@@ -98,8 +105,10 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     private void bindMapMarking() {
         map.setOnMapClickListener(latLng -> {
+            BitmapDescriptor customMarkerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
+                    .icon(customMarkerIcon)
                     .title("Here's where your reminder will be set!");
             if(currMarker != null) {
                 currMarker.remove();
@@ -115,6 +124,9 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         });
 
         viewModel.getButtonState().observe(getActivity(), mapButtonState -> {
+            if(circle != null){
+                circle.remove();
+            }
             switch (mapButtonState) {
                 case NONE:
                     discardMarker.setVisibility(View.INVISIBLE);
@@ -127,9 +139,20 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     deleteMarker.setVisibility(View.INVISIBLE);
                     break;
                 case DELETE_MARKER:
+                    double radiusMeters = 1000; // 1 km
+                    CircleOptions circleOptions = new CircleOptions()
+                            .center(selectedMarker.getPosition())
+                            .radius(markers.get(selectedMarker).getDistanceMetres())
+                            .strokeWidth(2)
+                            .strokeColor(Color.BLUE)
+                            .fillColor(Color.argb(70, 0, 0, 255));
+
+                    circle = map.addCircle(circleOptions);
+
                     discardMarker.setVisibility(View.INVISIBLE);
                     confirmMarker.setVisibility(View.INVISIBLE);
                     deleteMarker.setVisibility(View.VISIBLE);
+
                     break;
             }
         });
@@ -170,7 +193,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             }
 
             selectedMarker.remove();
-            viewModel.deleteById(markers.get(selectedMarker));
+            viewModel.deleteById(markers.get(selectedMarker).getId());
             selectedMarker = null;
             viewModel.setButtonState(MapButtonState.NONE);
         });
@@ -199,7 +222,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
             Marker marker = map.addMarker(options);
 
-            markers.put(marker,notification.getId());
+            markers.put(marker,notification);
         });
     }
 
