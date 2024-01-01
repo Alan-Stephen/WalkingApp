@@ -13,6 +13,18 @@ public class LocationNotificationEntity {
     private double lon;
     private int distanceMetres;
 
+    private String title;
+    private String description;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+
     public int getId() {
         return id;
     }
@@ -29,10 +41,13 @@ public class LocationNotificationEntity {
         this.id = id;
     }
 
-    public LocationNotificationEntity(double lat, double lon, int distanceMetres) {
+    public LocationNotificationEntity(double lat, double lon, int distanceMetres, String title,
+                                      String description) {
         this.lat = lat;
         this.lon = lon;
         this.distanceMetres = distanceMetres;
+        this.title = title;
+        this.description = description;
     }
 
     public int getDistanceMetres() {

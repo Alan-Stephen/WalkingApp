@@ -27,6 +27,9 @@
     <string name="title_hin">Enter Title here</string>
     <string name="discard">Discard</string>
     <string name="confirm">Confirm</string>
-    <string name="makeMarkerTitle">Create a location based Notification!</string>;
+    <string name="makeMarkerTitle">Create a location based Notification!</string>
+    <string name="notificationDescriptionHint">Description for notification</string>
+    <string name="notificationTitleHint">Title for notification</string>
+    <string name="deleteMarkerText">Delete Marker</string>;
 
 </resources>

@@ -19,5 +19,6 @@ import java.util.List;
     public void delete(LocationNotificationEntity notification);
     @Query("SELECT * FROM location_notifications")
     LiveData<List<LocationNotificationEntity>> getAllNotifications();
-
+    @Query("DELETE FROM location_notifications WHERE id = :entityId")
+    void deleteById(int entityId);
 }

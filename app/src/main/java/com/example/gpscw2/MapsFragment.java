@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,24 +31,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = "COMP3018_MAPS_FRAGMENT";
     private static final int MAKE_MARKER_RESULT_CODE = 109;
     MyLocationSource locationSource;
-
-    private boolean mapReady = false;
-    private boolean markerSelected = false;
-
     private MapsFragmentViewModel viewModel;
     private Button confirmMarker;
     private Button discardMarker;
-
-    ArrayList<Marker> markers;
-
+    private Button deleteMarker;
+    HashMap<Marker,Integer> markers;
     Marker currMarker = null;
+    Marker selectedMarker = null;
 
     public static MapsFragment newInstance(MyLocationSource source) {
         
@@ -86,7 +85,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             map.setMyLocationEnabled(true);
             locationSource.relalert();
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationSource.lastLat,locationSource.lastLon),15.0F));
-            mapReady = true;
 
             bindMapMarking();
             createInitialMarkers();
@@ -94,7 +92,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     };
 
     private void createInitialMarkers() {
-        markers = new ArrayList<>();
+        markers = new HashMap<>();
         refreshMarkers();
     }
 
@@ -107,21 +105,34 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 currMarker.remove();
             }
            currMarker = map.addMarker(options);
-           markerSelected = true;
-           switchVisiblities();
+           viewModel.setButtonState(MapButtonState.CREATE_MARKER);
         });
 
+        map.setOnMarkerClickListener(marker -> {
+            selectedMarker = marker;
+            viewModel.setButtonState(MapButtonState.DELETE_MARKER);
+            return false;
+        });
 
-    }
-
-    private void switchVisiblities() {
-        if(markerSelected) {
-            confirmMarker.setVisibility(View.VISIBLE);
-            discardMarker.setVisibility(View.VISIBLE);
-        } else {
-            confirmMarker.setVisibility(View.INVISIBLE);
-            discardMarker.setVisibility(View.INVISIBLE);
-        }
+        viewModel.getButtonState().observe(getActivity(), mapButtonState -> {
+            switch (mapButtonState) {
+                case NONE:
+                    discardMarker.setVisibility(View.INVISIBLE);
+                    confirmMarker.setVisibility(View.INVISIBLE);
+                    deleteMarker.setVisibility(View.INVISIBLE);
+                    break;
+                case CREATE_MARKER:
+                    confirmMarker.setVisibility(View.VISIBLE);
+                    discardMarker.setVisibility(View.VISIBLE);
+                    deleteMarker.setVisibility(View.INVISIBLE);
+                    break;
+                case DELETE_MARKER:
+                    discardMarker.setVisibility(View.INVISIBLE);
+                    confirmMarker.setVisibility(View.INVISIBLE);
+                    deleteMarker.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
     }
 
     @Nullable
@@ -134,22 +145,34 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
         confirmMarker = view.findViewById(R.id.confirmButton);
         discardMarker = view.findViewById(R.id.discardButton);
+        deleteMarker = view.findViewById(R.id.deleteMarker);
 
         confirmMarker.setOnClickListener(v -> {
-            markerSelected = false;
             Intent intent = new Intent(getActivity(),MakeMarkerActivity.class);
             intent.putExtra("lat",currMarker.getPosition().latitude);
             intent.putExtra("lon",currMarker.getPosition().longitude);
 
+            viewModel.setButtonState(MapButtonState.NONE);
             startActivity(intent);
-            switchVisiblities();
             refreshMarkers();
         });
+
         discardMarker.setOnClickListener(v -> {
-            markerSelected = false;
             currMarker.remove();
             currMarker = null;
-            switchVisiblities();
+            viewModel.setButtonState(MapButtonState.NONE);
+        });
+
+        deleteMarker.setOnClickListener(v -> {
+            if(selectedMarker == null) {
+                Log.d(TAG,"ERROR: SELECTED MARKER IS NULL");
+                return;
+            }
+
+            selectedMarker.remove();
+            viewModel.deleteById(markers.get(selectedMarker));
+            selectedMarker = null;
+            viewModel.setButtonState(MapButtonState.NONE);
         });
 
         return view;
@@ -159,7 +182,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         if(markers == null) {
             return;
         }
-        markers.forEach(Marker::remove);
+        markers.forEach((marker, integer) -> marker.remove());
 
         markers.clear();
         
@@ -168,12 +191,15 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             return;
         }
         viewModel.getAllNotifications().getValue().forEach(notification -> {
+            Log.d(TAG,notification.getDescription());
             MarkerOptions options = new MarkerOptions()
-                    .position(new LatLng(notification.getLat(),notification.getLon()));
+                    .position(new LatLng(notification.getLat(),notification.getLon()))
+                    .title(notification.getTitle())
+                    .snippet(notification.getDescription());
 
             Marker marker = map.addMarker(options);
 
-            markers.add(marker);
+            markers.put(marker,notification.getId());
         });
     }
 
@@ -186,6 +212,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         viewModel.getAllNotifications().observe(getActivity(), locationNotificationEntities -> {
             refreshMarkers();
         });
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {

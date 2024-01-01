@@ -15,6 +15,16 @@
         tools:layout_editor_absoluteX="-2dp"
         app:layout_constraintBottom_toTopOf="@id/buttons"
         app:layout_constraintTop_toTopOf="parent"
+
+        />
+
+    <Button
+        android:id="@+id/deleteMarker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/deleteMarkerText"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 
     <LinearLayout

@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_BACKGROUND_LOCATION},LOCATION_PERMISSION);
-        return;
     }
 
     private boolean checkLocationPermissions() {

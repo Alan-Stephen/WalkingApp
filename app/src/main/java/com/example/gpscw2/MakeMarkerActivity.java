@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MakeMarkerActivity extends AppCompatActivity {
 
@@ -55,7 +56,14 @@ public class MakeMarkerActivity extends AppCompatActivity {
         confirm.setOnClickListener(v -> {
             double lat = getIntent().getDoubleExtra("lat",0.0);
             double lon = getIntent().getDoubleExtra("lon",0.0);
-            viewModel.insert(new LocationNotificationEntity(lat,lon,notificationRange.getProgress()));
+
+            String title = notificationTitle.getText().toString();
+            String description = notificationDescription.getText().toString();
+
+            if(title.equals("")) {
+                Toast.makeText(this,"Title can't be empty",Toast.LENGTH_SHORT).show();
+            }
+            viewModel.insert(new LocationNotificationEntity(lat,lon,notificationRange.getProgress(),title,description));
             finish();
         });
     }

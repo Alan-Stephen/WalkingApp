@@ -34,6 +34,10 @@ public class LocationNotificationRepo {
         executor.execute(() -> dao.delete(notification));
     }
 
+    public void deleteById(int entityId) {
+        executor.execute(() -> dao.deleteById(entityId));
+    }
+
     public LiveData<List<LocationNotificationEntity>> getAllNotifications() {
         if(allNotifications.getValue() == null) {
             Log.d("comp3018", "it null in repo");
