@@ -28,6 +28,8 @@ public class LocationService extends Service {
     private static final String CHANNEL_ID = "LocationServiceID";
     private static final String CHANNEL_NAME = "Location Notifications";
 
+
+
     enum LocationAccuracy {
         HIGH_ACCURACY,
         LOW_ACCURACY,
@@ -110,7 +112,7 @@ public class LocationService extends Service {
             Log.d(TAG,e.toString());
         }
         if(locationListener == null)
-            locationListener = new MyLocationListener(20000,currLat.get(),currLon.get());
+            locationListener = new MyLocationListener(20000,currLat.get(),currLon.get(),this);
         currLocationAccuracy = LocationAccuracy.HIGH_ACCURACY;
 
         setCurrLocationAccuracy(currLocationAccuracy);
@@ -165,6 +167,7 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        locationListener.removeObserver();
         wakeLock.release();
         Log.d(TAG,"Wake Lock Released");
         Log.d(TAG, "Service destroyed");
@@ -175,4 +178,22 @@ public class LocationService extends Service {
         return binder;
     }
 
+    public void activeLocationNotification(int id,String title, String description) {
+        Intent intent = new Intent(this,MainActivity.class);
+
+        intent.putExtra("fragmentToDisplay", MainActivityViewModel.MainFragments.MAPS);
+        intent.putExtra("notificationID",id);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE);
+
+        Notification notification = new Notification.Builder(this,CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(description)
+                .setSmallIcon(R.drawable.globe_icon)
+                .setContentIntent(pendingIntent)
+                .build();
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.notify((int) System.currentTimeMillis(),notification);
+    }
 }

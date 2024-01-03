@@ -32,7 +32,9 @@ public class MapsFragmentViewModel extends AndroidViewModel {
         super(application);
         repo = new LocationNotificationRepo(application);
         allNotifications = repo.getAllNotifications();
-        if(allNotifications == null) {
+
+        Log.d(this.getClass().getSimpleName(), "APPLICATION HASHCODE: " + application.hashCode());
+        if(allNotifications.getValue() == null) {
             Log.d("VIEWMODEL","in view  model");
         }
         buttonState = new MutableLiveData<>();
