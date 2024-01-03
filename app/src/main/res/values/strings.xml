@@ -30,6 +30,8 @@
     <string name="makeMarkerTitle">Create a location based Notification!</string>
     <string name="notificationDescriptionHint">Description for notification</string>
     <string name="notificationTitleHint">Title for notification</string>
-    <string name="deleteMarkerText">Delete Marker</string>;
+    <string name="deleteMarkerText">Delete Marker</string>
+    <string name="notificationSwitchText">Remove after notifying</string>
+    <string name="notificationTimerLabelText">notification timeout time %ds (seconds)</string>;
 
 </resources>
