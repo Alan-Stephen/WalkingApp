@@ -37,7 +37,9 @@ public class MyLocationListener implements LocationListener {
     MyLocationSource locationSource;
     private boolean starting;
     private LocationService service;
+    private LocationNotificationRepo repo;
     private Location lastLocation;
+    private HashMap<Integer,Long> notificationTimeouts;
     LiveData<List<LocationNotificationEntity>> liveData;
     Observer<List<LocationNotificationEntity>> notificationObserver;
     Movement currentMovement;
@@ -48,6 +50,7 @@ public class MyLocationListener implements LocationListener {
        lon = new MutableLiveData<>();
        this.service = service;
        notifications = new ArrayList<>();
+       notificationTimeouts = new HashMap<>();
 
        lastLocation = new Location("gps");
        lastLocation.setLatitude(lastLat);
@@ -73,7 +76,8 @@ public class MyLocationListener implements LocationListener {
            notifications.addAll(locationNotificationEntities);
        };
 
-       liveData = new LocationNotificationRepo(service.getApplication()).getAllNotifications();
+       repo = new LocationNotificationRepo(service.getApplication());
+       liveData = repo.getAllNotifications();
        liveData.observeForever(notificationObserver);
 
        Log.d(this.getClass().getSimpleName(), "APPLICATION HASHCODE: " + service.getApplication().hashCode());
@@ -117,7 +121,20 @@ public class MyLocationListener implements LocationListener {
             notificationLocation.setLongitude(notification.getLon());
 
             Log.d("comp3018","" + location.distanceTo(notificationLocation) + " " + notification.getTitle() + " dist" + notification.getDistanceMetres());
-            if(location.distanceTo(notificationLocation) >= notification.getDistanceMetres()) {
+            if(location.distanceTo(notificationLocation) <= notification.getDistanceMetres()) {
+                if(notification.isRemoveAfterNotify()) {
+                    repo.deleteById(notification.getId());
+                } else {
+                    if(notificationTimeouts.containsKey(notification.getId())) {
+                        long timeElapsedSeconds = -1 * (notificationTimeouts.get(notification.getId()) - System.currentTimeMillis()) / 1000;
+                        Log.d("comp3018","elapsed " + timeElapsedSeconds + " for " + notification.getTimeoutTimeSeconds());
+                        if(timeElapsedSeconds > notification.getTimeoutTimeSeconds()) {
+                        } else {
+                          return;
+                        }
+                    }
+                    notificationTimeouts.put(notification.getId(), System.currentTimeMillis());
+                }
                 service.activeLocationNotification(notification.getId(),notification.getTitle(),notification.getDescription());
             }
         });

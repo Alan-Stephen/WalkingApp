@@ -26,16 +26,8 @@ public class LocationNotificationEntity {
         return removeAfterNotify;
     }
 
-    public void setRemoveAfterNotify(boolean removeAfterNotify) {
-        this.removeAfterNotify = removeAfterNotify;
-    }
-
     public int getTimeoutTimeSeconds() {
         return timeoutTimeSeconds;
-    }
-
-    public void setTimeoutTimeSeconds(int timeoutTimeSeconds) {
-        this.timeoutTimeSeconds = timeoutTimeSeconds;
     }
 
     public int getId() {
