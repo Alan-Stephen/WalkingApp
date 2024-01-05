@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.List;
 
 public class MapsFragmentViewModel extends AndroidViewModel {
-    private LocationNotificationRepo repo;
+    private LocationRepo repo;
     private MutableLiveData<MapButtonState> buttonState;
 
     public LiveData<List<LocationNotificationEntity>> getAllNotifications() {
@@ -30,7 +30,7 @@ public class MapsFragmentViewModel extends AndroidViewModel {
 
     public MapsFragmentViewModel(@NonNull Application application) {
         super(application);
-        repo = new LocationNotificationRepo(application);
+        repo = new LocationRepo(application);
         allNotifications = repo.getAllNotifications();
 
         Log.d(this.getClass().getSimpleName(), "APPLICATION HASHCODE: " + application.hashCode());
@@ -42,15 +42,15 @@ public class MapsFragmentViewModel extends AndroidViewModel {
     }
 
     public void insert(LocationNotificationEntity notification) {
-        repo.insert(notification);
+        repo.insertLocation(notification);
     }
     public void deleteById(int id) {repo.deleteById(id);}
 
     public void update(LocationNotificationEntity notification) {
-        repo.update(notification);
+        repo.updateNotification(notification);
     }
     public void delete(LocationNotificationEntity notification) {
-        repo.delete(notification);
+        repo.deleteNotification(notification);
     }
 
 }

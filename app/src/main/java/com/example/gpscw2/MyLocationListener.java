@@ -1,48 +1,37 @@
 package com.example.gpscw2;
 
-import android.app.Application;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import com.google.android.gms.maps.LocationSource;
-import com.google.android.gms.maps.model.LatLng;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
-
-import kotlin.Triple;
 
 public class MyLocationListener implements LocationListener {
     private MutableLiveData<Double> lat;
     private MutableLiveData<Double> lon;
-    private int intervalSeconds;
-
-    /**
-     * Helper class for use in this function only.
-     * */
+    private long sessionStartTime;
+    private MutableLiveData<Integer> distanceTravelledMetres;
     ArrayList<LocationNotificationEntity> notifications;
     MyLocationSource locationSource;
     private boolean starting;
     private LocationService service;
-    private LocationNotificationRepo repo;
+    private LocationRepo repo;
     private Location lastLocation;
     private HashMap<Integer,Long> notificationTimeouts;
     LiveData<List<LocationNotificationEntity>> liveData;
     Observer<List<LocationNotificationEntity>> notificationObserver;
     Movement currentMovement;
+    TravelEntity currTravelEntity;
     MyLocationListener(int intervalSeconds, double lastLat, double lastLon, LocationService service) {
        super();
        currentMovement = null;
@@ -57,14 +46,15 @@ public class MyLocationListener implements LocationListener {
        lastLocation.setLongitude(lastLon);
 
        Log.d("comp3018", lastLocation.toString());
-       this.intervalSeconds = intervalSeconds;
+       this.sessionStartTime = System.currentTimeMillis();
 
-       starting = false;
+       starting = true;
        lon.setValue(lastLon);
        lat.setValue(lastLat);
 
        locationSource = new MyLocationSource();
        locationSource.alert(lastLat,lastLon);
+       distanceTravelledMetres = new MutableLiveData<>(0);
 
 
        notificationObserver = locationNotificationEntities -> {
@@ -76,16 +66,19 @@ public class MyLocationListener implements LocationListener {
            notifications.addAll(locationNotificationEntities);
        };
 
-       repo = new LocationNotificationRepo(service.getApplication());
+       repo = new LocationRepo(service.getApplication());
+
        liveData = repo.getAllNotifications();
        liveData.observeForever(notificationObserver);
+
 
        Log.d(this.getClass().getSimpleName(), "APPLICATION HASHCODE: " + service.getApplication().hashCode());
     }
 
-    public void setIntervalSeconds(int seconds) {
-        intervalSeconds = seconds;
+    public MutableLiveData<Integer> getDistanceTravelledMetres() {
+        return distanceTravelledMetres;
     }
+
     public MutableLiveData<Double> getLat() {
         return lat;
     }
@@ -104,10 +97,13 @@ public class MyLocationListener implements LocationListener {
 
         locationSource.alert(lat.getValue(), lon.getValue());
         if(!starting) {
-            Log.d("comp3018", " Distance travellled : " + location.distanceTo(lastLocation) +
-                    " from:" + lastLocation.toString() + " to :" + location.toString());
+            int travelled = (int) location.distanceTo(lastLocation);
 
+            repo.addDistanceToCurrentDate(travelled, Movement.MovementType.TRAVEL);
+        } else {
+            repo.addDistanceToCurrentDate(0, Movement.MovementType.TRAVEL);
         }
+
         starting = false;
         lastLocation.setLongitude(location.getLongitude());
         lastLocation.setLatitude(location.getLatitude());

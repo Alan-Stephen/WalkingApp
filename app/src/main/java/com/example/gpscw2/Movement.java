@@ -9,7 +9,8 @@ public class Movement {
     enum MovementType {
         RUN,
         WALK,
-        CYCLE
+        CYCLE,
+        TRAVEL,
     }
 
     Movement(MovementType type) {

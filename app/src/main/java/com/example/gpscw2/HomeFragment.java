@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
@@ -14,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,7 +36,10 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private HomeFragmentViewModel viewModel;
+    private MutableLiveData<Integer> distanceTravelled;
     private Button pauseAndPlayLocation;
+    private Button travelled;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -65,16 +73,30 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_home, container, false);
+
+        viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
+
+
         pauseAndPlayLocation = view.findViewById(R.id.pauseAndPlay);
+        travelled = view.findViewById(R.id.travel);
+        travelled.setText(getString(R.string.travelledText,0));
+
+        viewModel.getTravelEntities().observe(getActivity(), travelEntities -> {
+            if(travelEntities == null) {
+                return;
+            }
+
+            TravelEntity entity = travelEntities.get(0);
+            travelled.setText(getString(R.string.travelledText,entity.getDistance()));
+        });
         if (isServiceRunning(LocationService.class)) {
             pauseAndPlayLocation.setText(R.string.pauseAndPlayAlt);
         } else {

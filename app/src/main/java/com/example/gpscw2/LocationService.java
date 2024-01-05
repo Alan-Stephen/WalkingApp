@@ -61,10 +61,13 @@ public class LocationService extends Service {
         public MyLocationSource getLocationSource() {
             return locationListener.locationSource;
         }
+
+        public MutableLiveData<Integer> getTravelledSession() {
+            return locationListener.getDistanceTravelledMetres();
+        }
     }
 
     private void setCurrLocationAccuracy(LocationAccuracy accuracy) {
-        locationManager.removeUpdates(locationListener);
 
         locationManager.removeUpdates(locationListener);
         currLocationAccuracy = accuracy;
@@ -73,12 +76,10 @@ public class LocationService extends Service {
                 Log.d(TAG,"SETTING LOCATION ACCURACY TO LOW ACCRAUCY");
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000,
                         25,locationListener);
-                locationListener.setIntervalSeconds(20000);
             } else if (currLocationAccuracy == LocationAccuracy.HIGH_ACCURACY){
                 Log.d(TAG,"SETTING LOCATION ACCURACY TO HIGH ACCURACY");
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000,
                         5,locationListener);
-                locationListener.setIntervalSeconds(2000);
             }
         } catch (SecurityException e) {
             Log.d(TAG,e.toString());
@@ -167,7 +168,8 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        locationListener.removeObserver();
+        if(locationListener != null)
+            locationListener.removeObserver();
         wakeLock.release();
         Log.d(TAG,"Wake Lock Released");
         Log.d(TAG, "Service destroyed");

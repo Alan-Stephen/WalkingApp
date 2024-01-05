@@ -6,16 +6,17 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = LocationNotificationEntity.class, version = 3)
-public abstract class LocationNotificationDatabase extends RoomDatabase {
-    private static LocationNotificationDatabase instance;
+@Database(entities = {LocationNotificationEntity.class,TravelEntity.class}, version = 4)
+public abstract class LocationDatabase extends RoomDatabase {
+    private static LocationDatabase instance;
 
     public abstract LocationNotificationDao locationNotificationDao();
+    public abstract TravelDao travelDao();
 
-    public static synchronized LocationNotificationDatabase getInstance(Context context) {
+    public static synchronized LocationDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                            LocationNotificationDatabase.class,
+                            LocationDatabase.class,
                             "notification_database").fallbackToDestructiveMigration()
                     .build();
         }

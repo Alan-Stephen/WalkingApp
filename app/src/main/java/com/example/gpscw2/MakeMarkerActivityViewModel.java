@@ -13,7 +13,7 @@ public class MakeMarkerActivityViewModel extends AndroidViewModel {
 
     private MutableLiveData<Integer> notificationRange;
     private MutableLiveData<Integer> notificationConsumptionTime;
-    private LocationNotificationRepo repo;
+    private LocationRepo repo;
     private MutableLiveData<Boolean> removeAfterNotify;
     private LiveData<List<LocationNotificationEntity>> allNotifications;
 
@@ -62,7 +62,7 @@ public class MakeMarkerActivityViewModel extends AndroidViewModel {
 
     public MakeMarkerActivityViewModel(@NonNull Application application) {
         super(application);
-        repo = new LocationNotificationRepo(application);
+        repo = new LocationRepo(application);
         allNotifications = repo.getAllNotifications();
 
         notificationRange = new MutableLiveData<>();
@@ -82,6 +82,6 @@ public class MakeMarkerActivityViewModel extends AndroidViewModel {
                removeAfterNotify.getValue(), notificationConsumptionTime.getValue()
        );
 
-       repo.insert(notification);
+       repo.insertLocation(notification);
     }
 }
