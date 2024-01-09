@@ -87,15 +87,16 @@ public class HomeFragment extends Fragment {
 
         pauseAndPlayLocation = view.findViewById(R.id.pauseAndPlay);
         travelled = view.findViewById(R.id.travel);
-        travelled.setText(getString(R.string.travelledText,0));
+
+        travelled.setText(requireActivity().getString(R.string.travelledText,0));
 
         viewModel.getTravelEntities().observe(getActivity(), travelEntities -> {
-            if(travelEntities == null) {
+            if(travelEntities == null || getContext() == null) {
                 return;
             }
 
             TravelEntity entity = travelEntities.get(0);
-            travelled.setText(getString(R.string.travelledText,entity.getDistance()));
+            travelled.setText(requireActivity().getString(R.string.travelledText,entity.getDistance()));
         });
         if (isServiceRunning(LocationService.class)) {
             pauseAndPlayLocation.setText(R.string.pauseAndPlayAlt);
