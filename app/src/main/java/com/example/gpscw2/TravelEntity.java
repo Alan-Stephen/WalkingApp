@@ -13,11 +13,45 @@ public class TravelEntity {
     private String movementType;
     private long date;
     private int distance;
+    private boolean positive;
+    private String description;
+    private Weather weather;
 
-    public TravelEntity( String movementType, long date, int distance) {
+    public TravelEntity(String movementType, long date, int distance, boolean positive, String description, Weather weather) {
         this.movementType = movementType;
         this.date = date;
         this.distance = distance;
+        this.positive = positive;
+        this.description = description;
+        this.weather = weather;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public boolean isPositive() {
+        return positive;
+    }
+
+    public void setPositive(boolean positive) {
+        this.positive = positive;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Weather getWeather() {
+        return weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
     }
 
     public int getId() {

@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment {
         travelled.setText(requireActivity().getString(R.string.travelledText,0));
 
         viewModel.getTravelEntities().observe(getActivity(), travelEntities -> {
-            if(travelEntities == null || getContext() == null) {
+            if(travelEntities == null || getContext() == null || travelEntities.size() == 0) {
                 return;
             }
 

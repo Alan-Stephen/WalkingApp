@@ -32,6 +32,7 @@
     <string name="notificationTitleHint">Title for notification</string>
     <string name="deleteMarkerText">Delete Marker</string>
     <string name="notificationSwitchText">Remove after notifying</string>
-    <string name="notificationTimerLabelText">notification timeout time %ds (seconds)</string>;
+    <string name="notificationTimerLabelText">notification timeout time %ds (seconds)</string>
+    <string name="travelledText">Runs \n Distance ran this session : \n %dm</string>;
 
 </resources>
