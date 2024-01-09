@@ -1,9 +1,12 @@
 package com.example.gpscw2;
 
-public class Movement {
-    private double kmTravelled;
-    private long secondsTravelled;
+import androidx.lifecycle.MutableLiveData;
 
+import java.time.LocalTime;
+
+public class Movement {
+    private MutableLiveData<Integer> travelledMetres;
+    private LocalTime timeStarted;
     private MovementType movementType;
 
     enum MovementType {
@@ -12,26 +15,31 @@ public class Movement {
         CYCLE,
         TRAVEL,
     }
-
     Movement(MovementType type) {
         this.movementType = type;
-        kmTravelled = 0.0;
-        secondsTravelled = 0;
+        travelledMetres = new MutableLiveData<>(0);
+        timeStarted  = LocalTime.now();
+
     }
 
-    public double getKmTravelled() {
-        return kmTravelled;
+    public MutableLiveData<Integer> getTravelledMetres() {
+        return travelledMetres;
+    }
+    public void setTravelledMetres(int travelledMetres) {
+        this.travelledMetres.setValue(travelledMetres);
+    }
+    public LocalTime getTimeStarted() {
+        return timeStarted;
+    }
+    public void setSecondsTravelled(LocalTime timeStarted) {
+        this.timeStarted = timeStarted;
     }
 
-    public void setKmTravelled(double kmTravelled) {
-        this.kmTravelled = kmTravelled;
+    public MovementType getMovementType() {
+        return movementType;
     }
 
-    public long getSecondsTravelled() {
-        return secondsTravelled;
-    }
-
-    public void setSecondsTravelled(long secondsTravelled) {
-        this.secondsTravelled = secondsTravelled;
+    public void addToKmTravelled(int distMetres) {
+        travelledMetres.setValue(travelledMetres.getValue() + distMetres);
     }
 }

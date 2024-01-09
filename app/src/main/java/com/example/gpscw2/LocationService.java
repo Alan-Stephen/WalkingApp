@@ -62,8 +62,16 @@ public class LocationService extends Service {
             return locationListener.locationSource;
         }
 
-        public MutableLiveData<Integer> getTravelledSession() {
-            return locationListener.getDistanceTravelledMetres();
+        public Movement getCurrMovement() {
+            return locationListener.getCurrMovement();
+        }
+
+        public Movement stopCurrentMovement() {
+            return locationListener.stopMovement();
+        }
+
+        public void startMovement(Movement.MovementType run) {
+            locationListener.startMovement(run);
         }
     }
 
@@ -168,9 +176,11 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(locationListener != null)
+        if(locationListener != null) {
             locationListener.removeObserver();
+        }
         wakeLock.release();
+        locationManager.removeUpdates(locationListener);
         Log.d(TAG,"Wake Lock Released");
         Log.d(TAG, "Service destroyed");
     }

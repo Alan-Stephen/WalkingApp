@@ -17,10 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MyLocationListener implements LocationListener {
+    private final String TAG = this.getClass().getSimpleName();
     private MutableLiveData<Double> lat;
     private MutableLiveData<Double> lon;
-    private long sessionStartTime;
-    private MutableLiveData<Integer> distanceTravelledMetres;
     ArrayList<LocationNotificationEntity> notifications;
     MyLocationSource locationSource;
     private boolean starting;
@@ -31,7 +30,6 @@ public class MyLocationListener implements LocationListener {
     LiveData<List<LocationNotificationEntity>> liveData;
     Observer<List<LocationNotificationEntity>> notificationObserver;
     Movement currentMovement;
-    TravelEntity currTravelEntity;
     MyLocationListener(int intervalSeconds, double lastLat, double lastLon, LocationService service) {
        super();
        currentMovement = null;
@@ -46,7 +44,6 @@ public class MyLocationListener implements LocationListener {
        lastLocation.setLongitude(lastLon);
 
        Log.d("comp3018", lastLocation.toString());
-       this.sessionStartTime = System.currentTimeMillis();
 
        starting = true;
        lon.setValue(lastLon);
@@ -54,8 +51,6 @@ public class MyLocationListener implements LocationListener {
 
        locationSource = new MyLocationSource();
        locationSource.alert(lastLat,lastLon);
-       distanceTravelledMetres = new MutableLiveData<>(0);
-
 
        notificationObserver = locationNotificationEntities -> {
            if(locationNotificationEntities == null) {
@@ -75,10 +70,6 @@ public class MyLocationListener implements LocationListener {
        Log.d(this.getClass().getSimpleName(), "APPLICATION HASHCODE: " + service.getApplication().hashCode());
     }
 
-    public MutableLiveData<Integer> getDistanceTravelledMetres() {
-        return distanceTravelledMetres;
-    }
-
     public MutableLiveData<Double> getLat() {
         return lat;
     }
@@ -96,8 +87,15 @@ public class MyLocationListener implements LocationListener {
         lat.setValue(location.getLatitude());
 
         locationSource.alert(lat.getValue(), lon.getValue());
+
+        // first step can produce invalid distances, so we ignore distance travelled.
         if(!starting) {
             int travelled = (int) location.distanceTo(lastLocation);
+
+            Log.d(TAG,"travelled : " + travelled);
+            if(currentMovement != null) {
+                currentMovement.addToKmTravelled(travelled);
+            }
 
             repo.addDistanceToCurrentDate(travelled, Movement.MovementType.TRAVEL);
         } else {
@@ -107,7 +105,7 @@ public class MyLocationListener implements LocationListener {
         starting = false;
         lastLocation.setLongitude(location.getLongitude());
         lastLocation.setLatitude(location.getLatitude());
-        Log.d("comp3018", location.getLatitude() + " " + location.getLongitude());
+        Log.d(this.getClass().getSimpleName(), location.getLatitude() + " " + location.getLongitude());
 
 
         notifications.forEach(notification -> {
@@ -124,9 +122,8 @@ public class MyLocationListener implements LocationListener {
                     if(notificationTimeouts.containsKey(notification.getId())) {
                         long timeElapsedSeconds = -1 * (notificationTimeouts.get(notification.getId()) - System.currentTimeMillis()) / 1000;
                         Log.d("comp3018","elapsed " + timeElapsedSeconds + " for " + notification.getTimeoutTimeSeconds());
-                        if(timeElapsedSeconds > notification.getTimeoutTimeSeconds()) {
-                        } else {
-                          return;
+                        if(timeElapsedSeconds < notification.getTimeoutTimeSeconds()) {
+                            return;
                         }
                     }
                     notificationTimeouts.put(notification.getId(), System.currentTimeMillis());
@@ -153,5 +150,19 @@ public class MyLocationListener implements LocationListener {
 
     public void removeObserver( ) {
         liveData.removeObserver(notificationObserver);
+    }
+
+    public void startMovement(Movement.MovementType type) {
+        currentMovement = new Movement(type);
+    }
+
+    public Movement getCurrMovement() {
+        return currentMovement;
+    }
+
+    public Movement stopMovement() {
+        Movement temp = currentMovement;
+        currentMovement = null;
+        return temp;
     }
 }

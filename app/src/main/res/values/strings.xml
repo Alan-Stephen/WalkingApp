@@ -8,8 +8,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="distanceLabelText">Distance Travelled</string>
     <string name="timeLabelText">Time Travelled</string>
-    <string name="timeLabelDefault">00:00:00</string>
-    <string name="DistanceLabelDefault">0.00 km</string>
+    <string name="durationLabel">%02d:%02d:%02d</string>
+    <string name="distanceLabel">%d m</string>
     <string name="runButton">START RUN</string>
     <string name="walkButton">START WALK</string>
     <string name="cycleButton">START CYCLING</string>
@@ -33,6 +33,9 @@
     <string name="deleteMarkerText">Delete Marker</string>
     <string name="notificationSwitchText">Remove after notifying</string>
     <string name="notificationTimerLabelText">notification timeout time %ds (seconds)</string>
-    <string name="travelledText">Runs \n Distance ran this session : \n %dm</string>;
+    <string name="travelledText">Runs \n Distance ran this session : \n %dm</string>
+    <string name="stopRun">STOP RUN</string>
+    <string name="stop_cycling">STOP CYCLING</string>
+    <string name="stop_walk">STOP WALK</string>;
 
 </resources>
