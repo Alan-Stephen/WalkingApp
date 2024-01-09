@@ -67,6 +67,9 @@ public class StartMovementActivity extends AppCompatActivity {
             run.setEnabled(true);
             walk.setEnabled(true);
             cycle.setEnabled(true);
+            run.setText(getString(R.string.runButton));
+            walk.setText(getString(R.string.walkButton));
+            cycle.setText(getString(R.string.cycleButton));
             return;
         }
 
@@ -76,7 +79,7 @@ public class StartMovementActivity extends AppCompatActivity {
                 walk.setEnabled(false);
                 cycle.setEnabled(false);
                 run.setText(getString(R.string.stopRun));
-                walk.setText(getString(R.string.runButton));
+                walk.setText(getString(R.string.walkButton));
                 cycle.setText(getString(R.string.cycleButton));
                 break;
             case CYCLE:
@@ -93,7 +96,7 @@ public class StartMovementActivity extends AppCompatActivity {
                 cycle.setEnabled(false);
                 walk.setText(getString(R.string.stop_walk));
                 run.setText(getString(R.string.runButton));
-                cycle.setText(getString(R.string.walkButton));
+                cycle.setText(getString(R.string.cycleButton));
                 break;
         }
     }
@@ -182,6 +185,7 @@ public class StartMovementActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             binder = (LocationService.LocationServiceBinder) service;
             if(binder.getCurrMovement() != null) {
+                Log.d(TAG,"movement already exists");
                 handleMovementAlreadyStarted();
             }
             Log.d(TAG,"Service bound");

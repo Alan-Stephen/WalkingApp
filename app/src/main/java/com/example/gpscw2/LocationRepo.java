@@ -71,7 +71,7 @@ public class LocationRepo {
 
         if(entity == null) {
             TravelEntity newEntity = new TravelEntity(convertMovementTypeToString(type),date,0,
-                    true,"",Weather.SUN);
+                    true,"",Weather.SUN,0);
             travelDao.insert(newEntity);
             entity = travelDao.getEntityByDate(date,convertMovementTypeToString(type));
         }

@@ -27,7 +27,7 @@ public class LocationService extends Service {
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "LocationServiceID";
     private static final String CHANNEL_NAME = "Location Notifications";
-
+    private static final int MOVEMENT_NOTIFICATION_ID = 2;
 
 
     enum LocationAccuracy {
@@ -39,7 +39,6 @@ public class LocationService extends Service {
     private LocationAccuracy currLocationAccuracy;
     private LocationManager locationManager;
     MyLocationListener locationListener;
-
     private PowerManager.WakeLock wakeLock;
 
 
@@ -67,12 +66,46 @@ public class LocationService extends Service {
         }
 
         public Movement stopCurrentMovement() {
+            stopMovementNotification();
             return locationListener.stopMovement();
         }
 
-        public void startMovement(Movement.MovementType run) {
-            locationListener.startMovement(run);
+        public void startMovement(Movement.MovementType type) {
+            createMovementNotification(type);
+            locationListener.startMovement(type);
         }
+    }
+
+    private void stopMovementNotification() {
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.cancel(MOVEMENT_NOTIFICATION_ID);
+    }
+
+    private void createMovementNotification(Movement.MovementType type) {
+
+        String title = "";
+        switch(type) {
+            case WALK:
+                title = "We're tracking your walk!";
+                break;
+            case CYCLE:
+                title = "We're tracking your cycle!";
+                break;
+            case RUN:
+                title = "We're tracking your run!";
+                break;
+        }
+
+        Intent intent  = new Intent(this, StartMovementActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent, PendingIntent.FLAG_IMMUTABLE);
+        Notification notification = new Notification.Builder(this,CHANNEL_ID)
+                .setContentTitle(title)
+                .setSmallIcon(R.drawable.globe_icon)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.notify(MOVEMENT_NOTIFICATION_ID,notification);
     }
 
     private void setCurrLocationAccuracy(LocationAccuracy accuracy) {
