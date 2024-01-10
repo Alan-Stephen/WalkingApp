@@ -66,16 +66,22 @@ public class LocationService extends Service {
         }
 
         public Movement stopCurrentMovement() {
+            // to save power
+            setCurrLocationAccuracy(LocationAccuracy.LOW_ACCURACY);
             stopMovementNotification();
             return locationListener.stopMovement();
         }
 
         public void stopAndSaveMovement(String title, String description, boolean positive,
                                         Weather weather) {
+
+            // save power
+            setCurrLocationAccuracy(LocationAccuracy.LOW_ACCURACY);
             locationListener.stopAndSaveMovement(title,description, positive,weather);
         }
 
         public void startMovement(Movement.MovementType type) {
+            setCurrLocationAccuracy(LocationAccuracy.HIGH_ACCURACY);
             createMovementNotification(type);
             locationListener.startMovement(type);
         }
@@ -160,7 +166,7 @@ public class LocationService extends Service {
         }
         if(locationListener == null)
             locationListener = new MyLocationListener(20000,currLat.get(),currLon.get(),this);
-        currLocationAccuracy = LocationAccuracy.HIGH_ACCURACY;
+        currLocationAccuracy = LocationAccuracy.LOW_ACCURACY;
 
         setCurrLocationAccuracy(currLocationAccuracy);
 
