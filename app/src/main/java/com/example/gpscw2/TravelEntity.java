@@ -17,15 +17,25 @@ public class TravelEntity {
     private boolean positive;
     private String description;
     private Weather weather;
+    private String title;
 
     public TravelEntity(String movementType, long date, int distance, boolean positive,
-                        String description, Weather weather, long lengthSeconds) {
+                        String description, Weather weather, long lengthSeconds, String title) {
         this.movementType = movementType;
         this.date = date;
         this.distance = distance;
         this.positive = positive;
         this.description = description;
         this.weather = weather;
+        this.lengthSeconds = lengthSeconds;
+        this.title = title;
+    }
+
+    public long getLengthSeconds() {
+        return lengthSeconds;
+    }
+
+    public void setLengthSeconds(long lengthSeconds) {
         this.lengthSeconds = lengthSeconds;
     }
 
@@ -80,12 +90,19 @@ public class TravelEntity {
     public void LocalDate(long date) {
         this.date = date;
     }
-
     public int getDistance() {
         return distance;
     }
-
     public void setDistance(int distance) {
         this.distance = distance;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
+

@@ -70,6 +70,11 @@ public class LocationService extends Service {
             return locationListener.stopMovement();
         }
 
+        public void stopAndSaveMovement(String title, String description, boolean positive,
+                                        Weather weather) {
+            locationListener.stopAndSaveMovement(title,description, positive,weather);
+        }
+
         public void startMovement(Movement.MovementType type) {
             createMovementNotification(type);
             locationListener.startMovement(type);

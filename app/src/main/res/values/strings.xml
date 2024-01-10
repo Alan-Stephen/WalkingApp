@@ -36,6 +36,19 @@
     <string name="travelledText">Runs \n Distance ran this session : \n %dm</string>
     <string name="stopRun">STOP RUN</string>
     <string name="stop_cycling">STOP CYCLING</string>
-    <string name="stop_walk">STOP WALK</string>;
-
+    <string name="stop_walk">STOP WALK</string>
+    <string name="movement_title">Movement Title</string>
+    <string name="thumbs_down">Thumbs Down</string>
+    <string name="thumbs_up">Thumbs Up</string>
+    <string name="movement_description">Movement Description</string>
+    <string name="rate_your_movement">Rate your %s</string>
+    <string name="what_was_weather">What was the weather</string>
+    <string name="rate_the_weather">Rate the weather</string>
+    <string name="clear_weather">Clear weather</string>
+    <string name="rainy_weather">Rainy Weather</string>
+    <string name="snowy_weather">Snowy Weather</string>
+    <string name="delete_movement">Delete Movement</string>
+    <string name="exit">Exit</string>
+    <string name="record_movement">Record Movement</string>
+    <string name="daily_walk">E.g Daily Walk</string>;
 </resources>

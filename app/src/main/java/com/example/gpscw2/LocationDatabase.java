@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {LocationNotificationEntity.class,TravelEntity.class}, version = 5)
+@Database(entities = {LocationNotificationEntity.class,TravelEntity.class}, version = 7)
 public abstract class LocationDatabase extends RoomDatabase {
     private static LocationDatabase instance;
 

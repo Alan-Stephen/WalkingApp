@@ -37,6 +37,7 @@
 
     <EditText
         android:id="@+id/notificationTitle"
+        android:maxLength="30"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autofillHints="To take photo..."
@@ -48,10 +49,11 @@
     <EditText
         android:id="@+id/notificationDescription"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:autofillHints="This is a description"
         android:hint="@string/notificationDescriptionHint"
-        android:inputType="textShortMessage"
+        android:inputType="textMultiLine"
+        android:maxLength="100"
         android:textAlignment="center"
         android:textSize="20sp" />
 

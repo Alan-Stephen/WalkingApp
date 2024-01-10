@@ -27,7 +27,7 @@ public class StartMovementActivity extends AppCompatActivity {
     private Button run;
     private Button walk;
     private Button cycle;
-
+    private static final int FINISH_MOVEMENT_REQUEST_CODE = 1;
     StartActivityViewModel viewModel;
 
     public void startStopMovement(Movement.MovementType type) {
@@ -39,11 +39,14 @@ public class StartMovementActivity extends AppCompatActivity {
                 return;
             }
 
-            binder.stopCurrentMovement();
+            // todo: here call the activity
+            Intent intent = new Intent(StartMovementActivity.this, FinishMovementActivity.class);
+            intent.putExtra("movementType",viewModel.getMovementType().getValue());
+            intent.putExtra("timeStarted", viewModel.getCurrMovement().getTimeStarted());
+            intent.putExtra("timeStopped", LocalTime.now());
+            intent.putExtra("distance", viewModel.getCurrMovement().getTravelledMetres().getValue());
+            startActivityForResult(intent,FINISH_MOVEMENT_REQUEST_CODE);
 
-            viewModel.setMovementType(null);
-            viewModel.setCurrMovement(null);
-            handler.removeCallbacks(updateTimeRunnable);
             return;
         }
 
@@ -188,6 +191,7 @@ public class StartMovementActivity extends AppCompatActivity {
                 Log.d(TAG,"movement already exists");
                 handleMovementAlreadyStarted();
             }
+
             Log.d(TAG,"Service bound");
         }
 
@@ -201,6 +205,21 @@ public class StartMovementActivity extends AppCompatActivity {
     private void bindLocationService() {
         Log.d(TAG,"ATTEMPTING SERVICE BINDING");
         bindService(new Intent(StartMovementActivity.this,LocationService.class),connection,Context.BIND_AUTO_CREATE);
+    }
+
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode != RESULT_OK) {
+            return;
+        }
+
+        FinishMovementResultStatus status = FinishMovementResultStatus.values()[data.getIntExtra("status",0)];
+
+        if(status == FinishMovementResultStatus.SAVE || status == FinishMovementResultStatus.DISCARD) {
+            viewModel.setCurrMovement(null);
+            viewModel.setMovementType(null);
+        }
     }
 
 

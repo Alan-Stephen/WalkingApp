@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout8"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".FinishMovementActivity">
+
+    <EditText
+        android:id="@+id/titleInput"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:hint="@string/daily_walk"
+        android:inputType="text"
+        android:maxLength="30"
+        android:paddingVertical="20dp"
+        android:text="@string/movement_title"
+        app:layout_constraintBottom_toTopOf="@id/descriptionInput"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/descriptionInput"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:inputType="textMultiLine"
+        android:maxLength="100"
+        android:text="@string/movement_description"
+        app:layout_constraintTop_toBottomOf="@id/titleInput"
+        app:layout_constraintBottom_toTopOf="@id/movementRatingLabel"
+        />
+
+    <TextView
+        android:id="@+id/movementRatingLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/rate_your_movement"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        app:layout_constraintTop_toBottomOf="@id/descriptionInput"
+        app:layout_constraintBottom_toTopOf="@id/movementRatingBar"
+        />
+
+    <LinearLayout
+        android:id="@+id/movementRatingBar"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/weatherLabel"
+        app:layout_constraintTop_toBottomOf="@id/movementRatingLabel"
+        >
+
+        <ImageView
+            android:id="@+id/goodMovement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/thumbs_up"
+            android:src="@drawable/good_movement_image" />
+
+        <ImageView
+            android:id="@+id/badMovement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/thumbs_down"
+            android:maxWidth="100dp"
+            android:src="@drawable/bad_movement_image" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/weatherLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rate_the_weather"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@id/weatherBar"
+        app:layout_constraintTop_toBottomOf="@id/movementRatingBar" />
+
+    <LinearLayout
+        android:id="@+id/weatherBar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/buttonBar"
+        app:layout_constraintTop_toBottomOf="@id/weatherLabel">
+
+        <ImageView
+            android:id="@+id/sunWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/clear_weather"
+            android:scaleType="centerInside"
+            android:src="@drawable/sun_weather_image" />
+
+        <ImageView
+            android:id="@+id/rainWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/rainy_weather"
+            android:maxWidth="200dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/rain_weather_icon" />
+
+        <ImageView
+            android:id="@+id/snowWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/snowy_weather"
+            android:maxWidth="200dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/snow_weather_icon" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonBar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/weatherBar">
+
+        <Button
+            android:id="@+id/recordMovement"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/record_movement" />
+
+        <Button
+            android:id="@+id/exitMovementFinish"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/exit" />
+
+        <Button
+            android:id="@+id/deleteMovement"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/delete_movement" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

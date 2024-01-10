@@ -12,6 +12,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -164,5 +166,21 @@ public class MyLocationListener implements LocationListener {
         Movement temp = currentMovement;
         currentMovement = null;
         return temp;
+    }
+
+    public void stopAndSaveMovement(String title, String description, boolean positive,
+                                    Weather weather) {
+        long difference = ChronoUnit.SECONDS.between(currentMovement.getTimeStarted(), LocalTime.now());
+        repo.insertTravel(new TravelEntity(
+                repo.convertMovementTypeToString(currentMovement.getMovementType()),
+                LocalDate.now().toEpochDay(),
+                currentMovement.getTravelledMetres().getValue(),
+                positive,
+                description,
+                weather,
+                difference,
+                title
+                ));
+        stopMovement();
     }
 }
