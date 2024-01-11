@@ -18,7 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +42,9 @@ public class HomeFragment extends Fragment {
     private MutableLiveData<Integer> distanceTravelled;
     private Button pauseAndPlayLocation;
     private Button travelled;
+    private Button run;
+    private Button walk;
+    private Button cycle;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -75,7 +80,26 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public int getDistanceToday(List<TravelEntity> entities) {
+        int res = 0;
 
+        if(entities == null || entities.size() == 0) {
+            return 0;
+        }
+
+        for(TravelEntity entity: entities) {
+            if(entity.getDate() == LocalDate.now().toEpochDay())
+                res += entity.getDistance();
+        }
+
+        return res;
+    }
+    public void startMovementViewerActivity(Movement.MovementType type) {
+        Intent intent = new Intent(getActivity(),MovementViewerActivity.class);
+
+        intent.putExtra("movementType",type.ordinal());
+        startActivity(intent);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -87,14 +111,17 @@ public class HomeFragment extends Fragment {
 
         pauseAndPlayLocation = view.findViewById(R.id.pauseAndPlay);
         travelled = view.findViewById(R.id.travel);
+        run = view.findViewById(R.id.run);
+        walk = view.findViewById(R.id.walk);
+        cycle = view.findViewById(R.id.cycle);
 
         travelled.setText(requireActivity().getString(R.string.travelledText,0));
 
-        travelled.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(),MovementViewerActivity.class);
+        travelled.setOnClickListener(v -> startMovementViewerActivity(Movement.MovementType.TRAVEL));
+        run.setOnClickListener(v -> startMovementViewerActivity(Movement.MovementType.RUN));
+        walk.setOnClickListener(v -> startMovementViewerActivity(Movement.MovementType.WALK));
+        cycle.setOnClickListener(v -> startMovementViewerActivity(Movement.MovementType.CYCLE));
 
-            startActivity(intent);
-        });
 
         viewModel.getTravelEntities().observe(getActivity(), travelEntities -> {
             if(travelEntities == null || getContext() == null || travelEntities.size() == 0) {
@@ -104,6 +131,28 @@ public class HomeFragment extends Fragment {
             TravelEntity entity = travelEntities.get(0);
             travelled.setText(requireActivity().getString(R.string.travelledText,entity.getDistance()));
         });
+
+        viewModel.getWalkEntities().observe(getActivity(),
+                entities -> {
+            if (getContext() == null)
+                return;
+            walk.setText(getString(R.string.walkText,getDistanceToday(entities)));
+        });
+
+        viewModel.getRunEntities().observe(getActivity(),
+                entities -> {
+                    if (getContext() == null)
+                        return;
+                    run.setText(getString(R.string.runText,getDistanceToday(entities)));
+                });
+
+        viewModel.getCycleEntities().observe(getActivity(),
+                entities -> {
+                    if (getContext() == null)
+                        return;
+                    cycle.setText(getString(R.string.cycleText,getDistanceToday(entities)));
+                });
+
         if (isServiceRunning(LocationService.class)) {
             pauseAndPlayLocation.setText(R.string.pauseAndPlayAlt);
         } else {
@@ -126,5 +175,4 @@ public class HomeFragment extends Fragment {
 
         return view;
     }
-
 }

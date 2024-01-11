@@ -33,7 +33,10 @@
     <string name="deleteMarkerText">Delete Marker</string>
     <string name="notificationSwitchText">Remove after notifying</string>
     <string name="notificationTimerLabelText">notification timeout time %ds (seconds)</string>
-    <string name="travelledText">Runs \n Distance ran this session : \n %dm</string>
+    <string name="travelledText">Click for more travel info \n  Distance Travelled Today: \n %dm</string>
+    <string name="runText">Click for more run info \n  Distance ran Today: \n %dm</string>
+    <string name="walkText">Click for more walk info \n  Distance walked Today: \n %dm</string>
+    <string name="cycleText">Click for more cycle info \n  Distance cycled Today: \n %dm</string>
     <string name="stopRun">STOP RUN</string>
     <string name="stop_cycling">STOP CYCLING</string>
     <string name="stop_walk">STOP WALK</string>

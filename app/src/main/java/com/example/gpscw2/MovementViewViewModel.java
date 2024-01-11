@@ -36,6 +36,9 @@ public class MovementViewViewModel extends AndroidViewModel {
         viewedData = new ArrayList<>();
     }
 
+    public void setType(Movement.MovementType type) {
+        this.type = type;
+    }
     public void loadData() {
         List<TravelEntity> entities = repo.getTravelEntities(type);
 
@@ -82,5 +85,6 @@ public class MovementViewViewModel extends AndroidViewModel {
     public void deleteById(int id) {
         TravelEntity entity = data.remove(id);
         viewedData.remove(entity);
+        repo.deleteById(id);
     }
 }

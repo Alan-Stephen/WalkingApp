@@ -14,12 +14,13 @@ public class MovementViewerActivity extends AppCompatActivity {
 
     MovementViewViewModel viewModel;
     RecyclerView recyclerView;
-
+    Movement.MovementType type;
     MovementViewerActivity movementViewerActivity = this;
     public void setUpRecycleView() {
         // to prevent blocking ui thread when calling load data
         // recyclerView needs access to data in viewModel which is populated with .loadData
         Executors.newSingleThreadExecutor().execute(() -> {
+            viewModel.setType(type);
             viewModel.loadData();
 
             runOnUiThread(this::setUp);
@@ -37,6 +38,8 @@ public class MovementViewerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movement_viewer);
 
+
+        type = Movement.MovementType.values()[getIntent().getIntExtra("movementType",0)];
 
         viewModel = new ViewModelProvider(this).get(MovementViewViewModel.class);
         recyclerView = findViewById(R.id.recyclerView);

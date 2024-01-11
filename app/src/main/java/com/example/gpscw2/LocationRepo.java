@@ -16,9 +16,11 @@ public class LocationRepo {
     private LocationNotificationDao notificationDao;
     private TravelDao travelDao;
     private LiveData<List<TravelEntity>> travelEntitiesLiveData;
+    private LiveData<List<TravelEntity>> runEntitiesLiveData;
+    private LiveData<List<TravelEntity>> walkEntitiesLiveData;
+    private LiveData<List<TravelEntity>> cycleEntitiesLiveData;
     private Executor executor;
     private LiveData<List<LocationNotificationEntity>> allNotifications;
-    private LiveData<TravelEntity> latestEntity;
 
     public LocationRepo(Application app) {
         LocationDatabase db = LocationDatabase.getInstance(app);
@@ -26,8 +28,23 @@ public class LocationRepo {
         travelDao = db.travelDao();
         allNotifications = notificationDao.getAllNotifications();
         travelEntitiesLiveData = travelDao.getTravelLiveData();
+        runEntitiesLiveData = travelDao.getRunsLiveData();
+        walkEntitiesLiveData = travelDao.getWalksLiveData();
+        cycleEntitiesLiveData = travelDao.getCyclesLiveData();
 
         executor = Executors.newSingleThreadExecutor();
+    }
+
+    public LiveData<List<TravelEntity>> getRunEntitiesLiveData() {
+        return runEntitiesLiveData;
+    }
+
+    public LiveData<List<TravelEntity>> getWalkEntitiesLiveData() {
+        return walkEntitiesLiveData;
+    }
+
+    public LiveData<List<TravelEntity>> getCycleEntitiesLiveData() {
+        return cycleEntitiesLiveData;
     }
 
     public LiveData<List<TravelEntity>> getTravelEntitiesLiveData() {

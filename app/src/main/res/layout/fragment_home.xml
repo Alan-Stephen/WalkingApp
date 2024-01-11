@@ -39,16 +39,22 @@
                 android:text="@string/travelledText" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/run"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="@string/runText" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/walk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="@string/walkText" />
+
+            <Button
+                android:id="@+id/cycle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/cycleText" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
