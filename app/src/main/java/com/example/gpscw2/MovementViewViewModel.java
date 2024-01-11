@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,9 @@ public class MovementViewViewModel extends AndroidViewModel {
     private ArrayList<TravelEntity> viewedData;
     private LocationRepo repo;
     private Movement.MovementType type;
+    TimeFilterOptions timeFilterOption;
+    Weather weatherFilterOption;
+    Boolean positiveFitlerOption;
 
     public MovementViewViewModel(@NonNull Application application) {
         super(application);
@@ -77,5 +82,53 @@ public class MovementViewViewModel extends AndroidViewModel {
         TravelEntity entity = data.remove(id);
         viewedData.remove(entity);
         repo.deleteNotificationById(id);
+    }
+
+    public void setTimeFilter(TimeFilterOptions filter) {
+        this.timeFilterOption = filter;
+        resetViewedEntities();
+    }
+
+    public void setWeatherFilter(Weather weather) {
+        this.weatherFilterOption = weather;
+        resetViewedEntities();
+    }
+
+    public void setPositiveFilter(Boolean filter) {
+        this.positiveFitlerOption = filter;
+        resetViewedEntities();
+    }
+
+    private void resetViewedEntities() {
+        viewedData.clear();
+        Log.d(TAG,"Changing data");
+        for(TravelEntity entity: data.values()) {
+            Log.d(TAG,"SCANNING");
+            switch(timeFilterOption) {
+                case TODAY:
+                    if(LocalDate.now().toEpochDay() - entity.getDate() != 0) {
+                        continue;
+                    }
+                case LAST_MONTH:
+                    if (LocalDate.now().toEpochDay() - entity.getDate() > 30) {
+                        continue;
+                    }
+                case LAST_WEEK:
+                    if (LocalDate.now().toEpochDay() - entity.getDate() > 7) {
+                        continue;
+                    }
+            }
+
+            if(weatherFilterOption != entity.getWeather() && weatherFilterOption != null) {
+                continue;
+            }
+
+            if(positiveFitlerOption != null && positiveFitlerOption == entity.isPositive()) {
+                continue;
+            }
+
+            viewedData.add(entity);
+            Log.d(TAG,"ENTITIES WHICH SHOULD BE VIEWED " + viewedData.size());
+        }
     }
 }

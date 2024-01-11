@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
+            android:hint="@string/title_hin"
             android:inputType="text"
             android:text="@string/title_hin" />
 
@@ -82,6 +83,7 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:ems="10"
+            android:hint="@string/descriptionHint"
             android:inputType="text"
             android:text="@string/descriptionHint" />
 

@@ -233,6 +233,7 @@ public class MovementCardViewAdapter  extends
             distanceTravelled.setText(activity.getString(R.string.metres,entity.getDistance()));
             weather.setValue(entity.getWeather());
             positive.setValue(entity.isPositive());
+            changed.setValue(false);
         }
     }
 }
