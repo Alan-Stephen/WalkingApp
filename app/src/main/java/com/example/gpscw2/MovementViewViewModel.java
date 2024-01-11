@@ -1,23 +1,14 @@
 package com.example.gpscw2;
 
 import android.app.Application;
-import android.location.Location;
-import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 public class MovementViewViewModel extends AndroidViewModel {
 
@@ -85,6 +76,6 @@ public class MovementViewViewModel extends AndroidViewModel {
     public void deleteById(int id) {
         TravelEntity entity = data.remove(id);
         viewedData.remove(entity);
-        repo.deleteById(id);
+        repo.deleteNotificationById(id);
     }
 }

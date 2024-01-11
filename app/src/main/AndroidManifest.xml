@@ -17,6 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GPSCW2">
+        <provider
+            android:name=".LocationContentProvider"
+            android:authorities="location_app"
+            android:enabled="true"
+            android:exported="true"></provider>
+
         <activity
             android:name=".MovementViewerActivity"
             android:exported="false" />

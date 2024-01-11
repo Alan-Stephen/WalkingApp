@@ -3,10 +3,11 @@ package com.example.gpscw2;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName="location_notifications")
+@Entity(tableName=LocationNotificationEntity.TABLE_NAME)
 public class LocationNotificationEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
+    public static final String TABLE_NAME = "location_notification";
     private double lat;
     private double lon;
     private int distanceMetres;

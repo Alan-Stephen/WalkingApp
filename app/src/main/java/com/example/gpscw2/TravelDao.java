@@ -1,5 +1,7 @@
 package com.example.gpscw2;
 
+import android.database.Cursor;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -17,7 +19,7 @@ import java.util.concurrent.TransferQueue;
 @Dao
 public interface TravelDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insert(TravelEntity entity);
+    public long insert(TravelEntity entity);
 
     @Update
     public void update(TravelEntity entity);
@@ -50,7 +52,10 @@ public interface TravelDao {
 
     @Query("SELECT * FROM travel WHERE movementType = :movementType AND date = :specifiedDate LIMIT 1")
     TravelEntity getEntityByDate(long specifiedDate, String movementType);
-
+    @Query("SELECT :columns FROM travel WHERE :options")
+    Cursor getDataCustom(String columns, String options);
     @Query("DELETE FROM travel WHERE id = :entityId")
     void deleteById(int entityId);
+
+
 }

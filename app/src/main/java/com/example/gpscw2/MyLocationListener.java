@@ -119,7 +119,7 @@ public class MyLocationListener implements LocationListener {
             Log.d("comp3018","" + location.distanceTo(notificationLocation) + " " + notification.getTitle() + " dist" + notification.getDistanceMetres());
             if(location.distanceTo(notificationLocation) <= notification.getDistanceMetres()) {
                 if(notification.isRemoveAfterNotify()) {
-                    repo.deleteById(notification.getId());
+                    repo.deleteNotificationById(notification.getId());
                 } else {
                     if(notificationTimeouts.containsKey(notification.getId())) {
                         long timeElapsedSeconds = -1 * (notificationTimeouts.get(notification.getId()) - System.currentTimeMillis()) / 1000;

@@ -1,12 +1,11 @@
 package com.example.gpscw2;
 
-import android.app.Application;
-import android.util.Log;
+import android.content.Context;
+import android.database.Cursor;
 
 import androidx.lifecycle.LiveData;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -22,7 +21,7 @@ public class LocationRepo {
     private Executor executor;
     private LiveData<List<LocationNotificationEntity>> allNotifications;
 
-    public LocationRepo(Application app) {
+    public LocationRepo(Context app) {
         LocationDatabase db = LocationDatabase.getInstance(app);
         notificationDao = db.locationNotificationDao();
         travelDao = db.travelDao();
@@ -35,6 +34,14 @@ public class LocationRepo {
         executor = Executors.newSingleThreadExecutor();
     }
 
+
+    public Cursor getLocationCustom(String columns, String options) {
+        return notificationDao.getDataCustom(columns,options);
+    }
+
+    public Cursor getTravelCustom(String columns, String options) {
+        return travelDao.getDataCustom(columns,options);
+    }
     public LiveData<List<TravelEntity>> getRunEntitiesLiveData() {
         return runEntitiesLiveData;
     }
@@ -119,20 +126,32 @@ public class LocationRepo {
     public void insertTravel(TravelEntity entity) {
         executor.execute(() -> travelDao.insert(entity));
     }
+
+    public int insertTravelAndReturnId(TravelEntity entity) {
+        return (int) travelDao.insert(entity);
+    }
+
+    public int insertLocationAndReturnId(LocationNotificationEntity entity) {
+        return (int) notificationDao.insert(entity);
+    }
     public void insertLocation(LocationNotificationEntity notification) {
         executor.execute(() -> notificationDao.insert(notification));
     }
     public void updateNotification(LocationNotificationEntity notification) {
         executor.execute(() -> notificationDao.update(notification));
     }
+    public void updateTravelEntity(TravelEntity entity){
+        executor.execute(() -> travelDao.update(entity));
+    }
     public void deleteNotification(LocationNotificationEntity notification) {
         executor.execute(() -> notificationDao.delete(notification));
     }
-
-    public void deleteById(int entityId) {
+    public void deleteNotificationById(int entityId) {
         executor.execute(() -> notificationDao.deleteById(entityId));
     }
-
+    public void deleteTravelById(int entityId) {
+        executor.execute(() -> travelDao.deleteById(entityId));
+    }
     public LiveData<List<LocationNotificationEntity>> getAllNotifications() {
         return allNotifications;
     }

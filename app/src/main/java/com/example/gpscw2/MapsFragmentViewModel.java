@@ -44,7 +44,7 @@ public class MapsFragmentViewModel extends AndroidViewModel {
     public void insert(LocationNotificationEntity notification) {
         repo.insertLocation(notification);
     }
-    public void deleteById(int id) {repo.deleteById(id);}
+    public void deleteById(int id) {repo.deleteNotificationById(id);}
 
     public void update(LocationNotificationEntity notification) {
         repo.updateNotification(notification);
