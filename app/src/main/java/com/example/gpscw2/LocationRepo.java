@@ -15,13 +15,9 @@ public class LocationRepo {
 
     private LocationNotificationDao notificationDao;
     private TravelDao travelDao;
-
+    private LiveData<List<TravelEntity>> travelEntitiesLiveData;
     private Executor executor;
     private LiveData<List<LocationNotificationEntity>> allNotifications;
-    private LiveData<List<TravelEntity>> allTravels;
-    private LiveData<List<TravelEntity>> allRuns;
-    private LiveData<List<TravelEntity>> allWalks;
-    private LiveData<List<TravelEntity>> allCycles;
     private LiveData<TravelEntity> latestEntity;
 
     public LocationRepo(Application app) {
@@ -29,13 +25,34 @@ public class LocationRepo {
         notificationDao = db.locationNotificationDao();
         travelDao = db.travelDao();
         allNotifications = notificationDao.getAllNotifications();
-        allTravels = travelDao.getTravels();
-        allRuns = travelDao.getRuns();
-        allWalks = travelDao.getWalks();
-        allCycles = travelDao.getCycles();
+        travelEntitiesLiveData = travelDao.getTravelLiveData();
 
         executor = Executors.newSingleThreadExecutor();
     }
+
+    public LiveData<List<TravelEntity>> getTravelEntitiesLiveData() {
+        return travelEntitiesLiveData;
+    }
+    public List<TravelEntity> getTravelEntities(Movement.MovementType type) {
+        List<TravelEntity> res;
+
+        switch (type){
+            case WALK:
+                res = travelDao.getWalks();
+                break;
+            case RUN:
+                res = travelDao.getRuns();
+                break;
+            case CYCLE:
+                res = travelDao.getCycles();
+                break;
+            default:
+                res = travelDao.getTravels();
+                break;
+        }
+
+        return res;
+    };
 
     public String convertMovementTypeToString(Movement.MovementType type) {
         String movementType;
@@ -82,22 +99,6 @@ public class LocationRepo {
     public void upsertTravel(TravelEntity entity) {
         travelDao.upsertTravel(entity);
     }
-    public LiveData<List<TravelEntity>> getAllTravels() {
-        return allTravels;
-    }
-
-    public LiveData<List<TravelEntity>> getAllRuns() {
-        return allRuns;
-    }
-
-    public LiveData<List<TravelEntity>> getAllWalks() {
-        return allWalks;
-    }
-
-    public LiveData<List<TravelEntity>> getAllCycles() {
-        return allCycles;
-    }
-
     public void insertTravel(TravelEntity entity) {
         executor.execute(() -> travelDao.insert(entity));
     }

@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GPSCW2">
         <activity
+            android:name=".MovementViewerActivity"
+            android:exported="false" />
+        <activity
             android:name=".FinishMovementActivity"
             android:exported="false" />
         <activity

@@ -90,6 +90,12 @@ public class HomeFragment extends Fragment {
 
         travelled.setText(requireActivity().getString(R.string.travelledText,0));
 
+        travelled.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(),MovementViewerActivity.class);
+
+            startActivity(intent);
+        });
+
         viewModel.getTravelEntities().observe(getActivity(), travelEntities -> {
             if(travelEntities == null || getContext() == null || travelEntities.size() == 0) {
                 return;

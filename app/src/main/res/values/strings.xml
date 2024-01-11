@@ -50,5 +50,12 @@
     <string name="delete_movement">Delete Movement</string>
     <string name="exit">Exit</string>
     <string name="record_movement">Record Movement</string>
-    <string name="daily_walk">E.g Daily Walk</string>;
+    <string name="daily_walk">E.g Daily Walk</string>
+    <string name="previous_movement">Previous %s</string>
+    <string name="ddmmyy">%d/%d/%d</string>
+    <string name="duration">Duration</string>
+    <string name="hhmmss">%d:%d:%d</string>
+    <string name="metres">%d m</string>
+    <string name="distance_travelled">Distance Travelled</string>
+    <string name="delete">delete</string>;
 </resources>
