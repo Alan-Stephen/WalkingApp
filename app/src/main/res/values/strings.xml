@@ -60,5 +60,13 @@
     <string name="hhmmss">%d:%d:%d</string>
     <string name="metres">%d m</string>
     <string name="distance_travelled">Distance Travelled</string>
-    <string name="delete">delete</string>;
+    <string name="delete">delete</string>
+    <string name="average_duration">average duration %02d/%02d/%02d</string>
+    <string name="average_distance">average distance %dm</string>
+    <string name="average_speed">average speed %.2f m/s</string>
+    <string name="distance_improvement">distance improvement %d%%</string>
+    <string name="duration_imrpovement">duration improvement %d%%</string>
+    <string name="speed_improvement">speed improvement %d%%</string>
+    <string name="total_distance_travelled">total distance travelled %dm</string>
+    <string name="travel_distance_improvement">travel distance improvement %d%%</string>;
 </resources>

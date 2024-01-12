@@ -58,4 +58,6 @@ public interface TravelDao {
     void deleteById(int entityId);
 
 
+    @Query("SELECT * FROM travel")
+    LiveData<List<TravelEntity>> getAllTravelEntitiesLiveData();
 }

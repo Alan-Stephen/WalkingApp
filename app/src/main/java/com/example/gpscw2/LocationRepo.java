@@ -20,6 +20,7 @@ public class LocationRepo {
     private LiveData<List<TravelEntity>> cycleEntitiesLiveData;
     private Executor executor;
     private LiveData<List<LocationNotificationEntity>> allNotifications;
+    private LiveData<List<TravelEntity>> allTravelEntities;
 
     public LocationRepo(Context app) {
         LocationDatabase db = LocationDatabase.getInstance(app);
@@ -30,6 +31,7 @@ public class LocationRepo {
         runEntitiesLiveData = travelDao.getRunsLiveData();
         walkEntitiesLiveData = travelDao.getWalksLiveData();
         cycleEntitiesLiveData = travelDao.getCyclesLiveData();
+        allTravelEntities = travelDao.getAllTravelEntitiesLiveData();
 
         executor = Executors.newSingleThreadExecutor();
     }
@@ -154,5 +156,9 @@ public class LocationRepo {
     }
     public LiveData<List<LocationNotificationEntity>> getAllNotifications() {
         return allNotifications;
+    }
+
+    public LiveData<List<TravelEntity>> getAllTravelEntities(){
+        return allTravelEntities;
     }
 }

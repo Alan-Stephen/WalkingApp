@@ -123,5 +123,7 @@ public class MakeMarkerActivity extends AppCompatActivity {
             viewModel.createLocationNotification(lat,lon);
             finish();
         });
+
+        viewModel.setRemoveAfterNotify(false);
     }
 }
