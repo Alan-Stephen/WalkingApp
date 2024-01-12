@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.concurrent.Executors;
@@ -32,6 +33,8 @@ public class MovementViewerActivity extends AppCompatActivity {
     Spinner filterTime;
     Spinner filterWeather;
     Spinner filterMovement;
+    private TextView title;
+
     public void setUpRecycleView() {
         // to prevent blocking ui thread when calling load data
         // recyclerView needs access to data in viewModel which is populated with .loadData
@@ -138,13 +141,29 @@ public class MovementViewerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movement_viewer);
 
         type = Movement.MovementType.values()[getIntent().getIntExtra("movementType",0)];
-
+        title = findViewById(R.id.movementViewerTitle);
         viewModel = new ViewModelProvider(this).get(MovementViewViewModel.class);
         recyclerView = findViewById(R.id.recyclerView);
         filterTime = findViewById(R.id.filterTime);
         filterWeather = findViewById(R.id.filterWeather);
         filterMovement = findViewById(R.id.filterMovement);
 
+        String movementType= "";
+        switch(Movement.MovementType.values()[getIntent().getIntExtra("movementType",0)]) {
+            case WALK:
+                movementType = "Walk";
+                break;
+            case RUN:
+                movementType = "Run";
+                break;
+            case CYCLE:
+                movementType = "Cycle";
+                break;
+            case TRAVEL:
+                movementType = "Travel";
+                break;
+        }
+        title.setText(getString(R.string.previous_movement,movementType));
         setUpRecycleView();
     }
 }

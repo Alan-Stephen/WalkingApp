@@ -9,8 +9,6 @@ public class MainActivityViewModel extends ViewModel {
         MAIN,
         MAPS
     }
-    private boolean gotLocationPermissions = false;
-    private boolean locationServiceActive = false;
     private double lat;
     private double lon;
     private MainFragments currFragment;
@@ -37,28 +35,9 @@ public class MainActivityViewModel extends ViewModel {
     public void setCurrFragment(MainFragments currFragment) {
         this.currFragment = currFragment;
     }
-
-    public boolean isGotLocationPermissions() {
-        return gotLocationPermissions;
-    }
-
-    public void setGotLocationPermissions(boolean gotLocationPermissions) {
-        this.gotLocationPermissions = gotLocationPermissions;
-    }
-
-    public boolean isLocationServiceActive() {
-        return locationServiceActive;
-    }
-
     public MainActivityViewModel() {
-        setGotLocationPermissions(false);
-        setLocationServiceActive(false);
         setLat(0.0);
         setLon(0.0);
         setCurrFragment(MainFragments.MAIN);
-    }
-
-    public void setLocationServiceActive(boolean locationServiceActive) {
-        this.locationServiceActive = locationServiceActive;
     }
 }

@@ -20,6 +20,7 @@
             android:ems="10"
             android:hint="@string/title_hin"
             android:inputType="text"
+            android:maxLength="30"
             android:text="@string/title_hin" />
 
         <Button
@@ -85,6 +86,7 @@
             android:ems="10"
             android:hint="@string/descriptionHint"
             android:inputType="text"
+            android:maxLength="100"
             android:text="@string/descriptionHint" />
 
         <LinearLayout

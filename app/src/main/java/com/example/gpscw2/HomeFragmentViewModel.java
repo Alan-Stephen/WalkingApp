@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -15,7 +16,6 @@ public class HomeFragmentViewModel extends AndroidViewModel {
     private LiveData<List<TravelEntity>> walkEntities;
     private LiveData<List<TravelEntity>> runEntities;
     private LiveData<List<TravelEntity>> cycleEntities;
-    private Movement.MovementType type;
 
     public HomeFragmentViewModel(@NonNull Application application) {
         super(application);
